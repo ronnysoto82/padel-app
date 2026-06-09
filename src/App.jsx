@@ -557,7 +557,7 @@ export default function PadelBooking() {
                                     <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
                                     <span style={{fontSize:10,color:"#81c784",background:"#c8e6c9",borderRadius:20,padding:"1px 6px",flexShrink:0}}>sub</span>
                                   </div>
-                                  {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:11,color:"#fff",cursor:"pointer",fontWeight:"bold",flexShrink:0}}>✕</button>}
+                                  {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontWeight:"bold",flexShrink:0}}>✕</button>}
                                 </div>
                               ):(
                                 !past&&(
@@ -609,7 +609,7 @@ export default function PadelBooking() {
               <p style={{color:"#7a7060",margin:"0 0 4px",fontSize:13}}><strong>{modal.name}</strong> · {modal.day} at {fmt(modal.hour)}</p>
               <p style={{color:"#a09880",margin:"0 0 4px",fontSize:13}}>Enter your PIN to skip this week only. You'll be back automatically next week.</p>
               {adminPinHash&&<p style={{color:"#b8a898",margin:"0 0 16px",fontSize:12}}>Forgotten your PIN? Ask the coach to skip the class for you.</p>}
-              <input className="pin-input" type="password" inputMode="numeric" maxLength={4} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handlePinVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
+              <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handlePinVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#f0ede4",border:"none",color:"#7a7060",fontSize:14}}>Cancel</button>
@@ -627,7 +627,7 @@ export default function PadelBooking() {
               </div>
               <p style={{color:"#7a7060",margin:"0 0 4px",fontSize:13}}>Enter your PIN to confirm removal.</p>
               {adminPinHash&&<p style={{color:"#b8a898",margin:"0 0 16px",fontSize:12}}>Forgotten your PIN? Ask the coach to cancel the class for you.</p>}
-              <input className="pin-input" type="password" inputMode="numeric" maxLength={4} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handlePinVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
+              <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handlePinVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#f0ede4",border:"none",color:"#7a7060",fontSize:14}}>Cancel</button>
@@ -654,7 +654,7 @@ export default function PadelBooking() {
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Restore booking?</h2>
               <p style={{color:"#7a7060",margin:"0 0 4px",fontSize:13}}>Enter <strong>{modal.name}</strong>'s PIN to return to this week's class.</p>
               {adminPinHash&&<p style={{color:"#b8a898",margin:"0 0 16px",fontSize:12}}>Forgotten your PIN? Ask the coach to restore the booking for you.</p>}
-              <input className="pin-input" type="password" inputMode="numeric" maxLength={4} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handleUndoSkipVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
+              <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handleUndoSkipVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#f0ede4",border:"none",color:"#7a7060",fontSize:14}}>Cancel</button>
@@ -686,7 +686,7 @@ export default function PadelBooking() {
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Remove substitute?</h2>
               <p style={{color:"#7a7060",margin:"0 0 4px",fontSize:13}}>Enter <strong>{modal.repName}</strong>'s PIN to remove this substitution.</p>
               <p style={{color:"#b8a898",margin:"0 0 16px",fontSize:12}}>Forgotten your PIN? Ask the coach to remove you.</p>
-              <input className="pin-input" type="password" inputMode="numeric" maxLength={4} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handleRemoveRepVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
+              <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handleRemoveRepVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#f0ede4",border:"none",color:"#7a7060",fontSize:14}}>Cancel</button>
