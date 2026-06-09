@@ -7,7 +7,14 @@ const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Sunday"];
 const DAY_SHORT = { Monday:"Mon",Tuesday:"Tue",Wednesday:"Wed",Thursday:"Thu",Friday:"Fri",Sunday:"Sun" };
 const HOURS = [17,18,19,20,21];
 const MAX_SLOTS = 4;
-const DEFAULT_LEVELS = { 17:"Medium beginner",18:"Medium to high beginner",19:"Medium intermediate",20:"Medium beginner",21:"" };
+const DEFAULT_LEVEL_TEMPLATE = { 17:"Medium beginner",18:"Medium to high beginner",19:"Medium intermediate",20:"Medium beginner",21:"" };
+
+// Default levels are per-day (same template for each day initially)
+function buildDefaultLevels() {
+  const out = {};
+  DAYS.forEach(day => { HOURS.forEach(h => { out[`${day}-${h}`] = DEFAULT_LEVEL_TEMPLATE[h]; }); });
+  return out;
+}
 
 function fmt(h) { return `${h<=12?h:h-12}:00 ${h<12?"AM":"PM"}`; }
 
@@ -33,7 +40,7 @@ function weekKey(date) {
   d.setUTCDate(d.getUTCDate()+4-dayNum);
   const yearStart=new Date(Date.UTC(d.getUTCFullYear(),0,1));
   const week=Math.ceil((((d-yearStart)/86400000)+1)/7);
-  return `${d.getUTCFullYear()}-W${String(week).padStart(2,"0")}`;
+  return `${d.getUTCFullYear()}-W${String(week).padStart(2,"00")}`;
 }
 
 function slotId(day,hour) { return `${day}-${hour}`; }
@@ -71,13 +78,13 @@ async function dbGetAll() {
 }
 
 export default function PadelBooking() {
-  const [recurring,setRecurring]     = useState([]);   // [{slot_id, name, pin_hash}]
-  const [cancelled,setCancelled]     = useState([]);   // [{cancel_key, names:[...]}]
-  const [classLevels,setClassLevels] = useState(DEFAULT_LEVELS);
-  const [editingLevel,setEditingLevel] = useState(null);
+  const [recurring,setRecurring]     = useState([]);
+  const [cancelled,setCancelled]     = useState([]);
+  // classLevels keyed by "Day-hour" e.g. "Monday-17"
+  const [classLevels,setClassLevels] = useState(buildDefaultLevels());
+  const [editingLevel,setEditingLevel] = useState(null); // hour number or null
   const [levelDraft,setLevelDraft]   = useState("");
-  const [setAllDaysPending,setSetAllDaysPending] = useState(null); // {hour, level}
-  const [blockedDays,setBlockedDays] = useState([]);   // [{block_key, reason}]
+  const [blockedDays,setBlockedDays] = useState([]);
   const [adminPinHash,setAdminPinHash] = useState(null);
   const [weekOffset,setWeekOffset]   = useState(()=>{ try { return parseInt(sessionStorage.getItem("weekOffset")||"0",10); } catch{ return 0; }});
   const [activeDay,setActiveDay]     = useState(()=>{ try { return sessionStorage.getItem("activeDay")||null; } catch{ return null; }});
@@ -107,8 +114,16 @@ export default function PadelBooking() {
       if(Array.isArray(r)) setRecurring(r);
       if(Array.isArray(c)) setCancelled(c);
       if(Array.isArray(l) && l.length) {
-        const lv={...DEFAULT_LEVELS};
-        l.forEach(({hour,level})=>{ lv[hour]=level; });
+        const lv = buildDefaultLevels();
+        l.forEach(row => {
+          // Support both old format {hour, level} and new format {day, hour, level}
+          if(row.day) {
+            lv[`${row.day}-${row.hour}`] = row.level;
+          } else {
+            // Old data: apply to all days
+            DAYS.forEach(day => { lv[`${day}-${row.hour}`] = row.level; });
+          }
+        });
         setClassLevels(lv);
       }
       if(Array.isArray(b)) setBlockedDays(b);
@@ -143,16 +158,13 @@ export default function PadelBooking() {
     const wk=weekKey(weekDates[day]);
     const names=getCancelledNames(`${wk}-rep-${slotId(day,hour)}-${originalName}`);
     if(!names.length) return null;
-    // names stored as [{name,pinHash}] for reps
     return typeof names[0]==="object" ? names[0] : null;
   }
 
   // ── DB writes ───────────────────────────────────────────────────────────────
   async function upsertCancelled(key, names) {
-    // Try update first; if no rows affected, insert
     const updateRes = await sb(`cancelled?cancel_key=eq.${encodeURIComponent(key)}`, "PATCH", {names});
     const count = updateRes.headers ? updateRes.headers.get("content-range") : null;
-    // If nothing was updated (new key), insert it
     if(count === "*/0" || count === null) {
       await sb("cancelled", "POST", {cancel_key: key, names});
     }
@@ -163,17 +175,13 @@ export default function PadelBooking() {
     });
   }
 
-  async function saveClassLevel(hour, level) {
-    await sb("class_levels","POST",{hour,level});
-    setClassLevels(prev=>({...prev,[hour]:level}));
-  }
-
-  async function saveAllDaysLevel(hour, level) {
-    await Promise.all(HOURS.map(h => sb("class_levels","POST",{hour:h,level})));
-    const updated = {};
-    HOURS.forEach(h => { updated[h] = level; });
-    setClassLevels(prev=>({...prev,...updated}));
-    showToast("Level set for all time slots ✓");
+  // Save level per day+hour — uses day+hour as compound key stored as a single "hour" field
+  // We store as {day, hour, level} in Supabase. The table needs a `day` column.
+  // We use hour as a string "Day-hour" for the unique key via the id field.
+  async function saveClassLevel(day, hour, level) {
+    // Use a composite id so upsert works correctly per day+hour
+    await sb("class_levels", "POST", {id:`${day}-${hour}`, day, hour, level});
+    setClassLevels(prev=>({...prev,[`${day}-${hour}`]:level}));
   }
 
   async function saveAdminPin(hash) {
@@ -203,8 +211,7 @@ export default function PadelBooking() {
     setPinError(""); setModal(null);
     if(action==="block") openModal("block-reason",{day});
     else if(action==="unblock") doUnblockDay(day);
-    else if(action==="edit-level") { setEditingLevel(hour); setLevelDraft(classLevels[hour]||""); }
-    else if(action==="set-level-all") openModal("admin-verify-level",{hour,level:levelDraft});
+    else if(action==="edit-level") { setEditingLevel(hour); setLevelDraft(classLevels[`${day}-${hour}`]||""); }
   }
 
   function handleAdminVerify() {
@@ -217,17 +224,9 @@ export default function PadelBooking() {
 
   function handleAdminVerifyEditLevel() {
     if(hashPin(form.pin)!==adminPinHash){setPinError("Incorrect coach PIN");return;}
-    const {hour}=modal;
+    const {day,hour}=modal;
     setPinError(""); setModal(null);
-    setEditingLevel(hour); setLevelDraft(classLevels[hour]||"");
-  }
-
-  function handleAdminVerifyLevelAll() {
-    if(hashPin(form.pin)!==adminPinHash){setPinError("Incorrect coach PIN");return;}
-    const {hour,level}=modal;
-    setPinError(""); setModal(null);
-    saveAllDaysLevel(hour,level);
-    setEditingLevel(null);
+    setEditingLevel(hour); setLevelDraft(classLevels[`${day}-${hour}`]||"");
   }
 
   async function doBlockDay(day,reason) {
@@ -400,7 +399,6 @@ export default function PadelBooking() {
 
       <div style={{maxWidth:680,margin:"0 auto",padding:"24px 16px 80px"}}>
 
-        {/* Loading */}
         {loading&&(
           <div style={{textAlign:"center",padding:"60px 0",color:"#7a7060"}}>
             <div style={{fontSize:32,animation:"spin 1s linear infinite",display:"inline-block"}}>🎾</div>
@@ -475,6 +473,7 @@ export default function PadelBooking() {
               const players=getPlayers(today,hour);
               const past=isPast(weekDates[today],hour);
               const full=players.length>=MAX_SLOTS;
+              const levelKey=`${today}-${hour}`;
 
               return (
                 <div key={hour} className="slot-row" style={{background:"#fff",borderRadius:14,border:`1.5px solid ${full?"#f4c2c2":"#e0d8c8"}`,padding:"16px 18px",opacity:past?0.55:1}}>
@@ -489,21 +488,21 @@ export default function PadelBooking() {
                           <input autoFocus value={levelDraft}
                             onChange={e=>setLevelDraft(e.target.value)}
                             onKeyDown={e=>{
-                              if(e.key==="Enter"){saveClassLevel(hour,levelDraft);setEditingLevel(null);}
+                              if(e.key==="Enter"){saveClassLevel(today,hour,levelDraft);setEditingLevel(null);}
                               if(e.key==="Escape")setEditingLevel(null);
                             }}
                             placeholder="e.g. Medium beginner"
                             style={{fontSize:12,padding:"3px 10px",borderRadius:8,border:"1.5px solid #1a1a2e",background:"#f9f6f0",color:"#1a1a2e",width:190}}
                           />
-                          <button onClick={()=>{saveClassLevel(hour,levelDraft);setEditingLevel(null);}} style={{background:"#1a1a2e",border:"none",borderRadius:8,padding:"3px 10px",color:"#f5f0e8",fontSize:12,cursor:"pointer"}}>✓</button>
+                          <button onClick={()=>{saveClassLevel(today,hour,levelDraft);setEditingLevel(null);}} style={{background:"#1a1a2e",border:"none",borderRadius:8,padding:"3px 10px",color:"#f5f0e8",fontSize:12,cursor:"pointer"}}>✓</button>
                           <button onClick={()=>setEditingLevel(null)} style={{background:"#f0ede4",border:"none",borderRadius:8,padding:"3px 8px",color:"#7a7060",fontSize:12,cursor:"pointer"}}>✕</button>
                         </div>
                       ):(
                         <div style={{marginTop:3,display:"flex",alignItems:"center",gap:5}}>
-                          <span style={{fontSize:12,color:"#7a6050"}}>{classLevels[hour]||<em style={{opacity:0.4}}>no level set</em>}</span>
+                          <span style={{fontSize:12,color:"#7a6050"}}>{classLevels[levelKey]||<em style={{opacity:0.4}}>no level set</em>}</span>
                           {!past&&<button onClick={()=>{
-                            if(!adminPinHash){openModal("admin-setup",{action:"edit-level",hour});return;}
-                            openModal("admin-verify-edit-level",{hour});
+                            if(!adminPinHash){openModal("admin-setup",{action:"edit-level",day:today,hour});return;}
+                            openModal("admin-verify-edit-level",{day:today,hour});
                           }} style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:"#c0b8a8",padding:0}}>✏️</button>}
                         </div>
                       )}
@@ -528,37 +527,37 @@ export default function PadelBooking() {
                           </div>
                         );
                       }
-                      const {name,pin_hash}=player;
+                      const {name}=player;
                       const skipped=isSkipped(today,hour,name);
                       const rep=getReplacement(today,hour,name);
 
                       return (
                         <div key={name} style={{display:"flex",alignItems:"center",gap:8}}>
                           <span style={{fontSize:11,color:"#a09880",width:16,textAlign:"center",flexShrink:0}}>{i+1}</span>
-                          <div style={{display:"flex",alignItems:"center",gap:8,flex:1}}>
-                            <div className="pill" style={{display:"flex",alignItems:"center",gap:6,flex:"0 0 auto",maxWidth:160,background:skipped?"#f5f0e8":"#ede8dc",borderRadius:20,padding:"6px 12px",fontSize:13,color:skipped?"#b0a898":"#1a1a2e",border:skipped?"1px dashed #ccc4b0":"none",textDecoration:skipped?"line-through":"none",opacity:skipped?0.75:1}}>
+                          <div style={{display:"flex",alignItems:"center",gap:8,flex:1,minWidth:0}}>
+                            <div className="pill" style={{display:"flex",alignItems:"center",gap:6,minWidth:0,maxWidth:160,background:skipped?"#f5f0e8":"#ede8dc",borderRadius:20,padding:"6px 12px",fontSize:13,color:skipped?"#b0a898":"#1a1a2e",border:skipped?"1px dashed #ccc4b0":"none",textDecoration:skipped?"line-through":"none",opacity:skipped?0.75:1}}>
                               <span style={{fontSize:9,opacity:0.4,flexShrink:0}}>●</span>
-                              <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{name}</span>
+                              <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{name}</span>
                               {!past&&skipped&&(
-                                <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#c8e84a",border:"none",borderRadius:20,padding:"1px 8px",fontSize:10,color:"#1a1a2e",fontWeight:"bold",cursor:"pointer"}}>↩</button>
+                                <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#c8e84a",border:"none",borderRadius:20,padding:"1px 8px",fontSize:10,color:"#1a1a2e",fontWeight:"bold",cursor:"pointer",flexShrink:0}}>↩</button>
                               )}
                             </div>
                             {!past&&!skipped&&(
                               <div style={{display:"flex",gap:4,flexShrink:0}}>
-                                <button onClick={()=>openModal("pin-skip",{day:today,hour,name,action:"skip"})} style={{background:"#f97316",border:"none",borderRadius:6,padding:"4px 12px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",lineHeight:1}}>Skip</button>
-                                <button onClick={()=>openModal("pin-remove",{day:today,hour,name,action:"remove"})} style={{background:"#c0392b",border:"none",borderRadius:6,padding:"4px 12px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1}}>✕</button>
+                                <button onClick={()=>openModal("pin-skip",{day:today,hour,name,action:"skip"})} style={{background:"#f97316",border:"none",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",lineHeight:1}}>Skip</button>
+                                <button onClick={()=>openModal("pin-remove",{day:today,hour,name,action:"remove"})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1}}>✕</button>
                               </div>
                             )}
                             {skipped&&(
                               rep?(
-                                <div style={{display:"flex",alignItems:"center",gap:6}}>
-                                  <span style={{fontSize:11,color:"#a09880"}}>→</span>
-                                  <div className="pill" style={{display:"flex",alignItems:"center",gap:6,background:"#e8f5e9",borderRadius:20,padding:"6px 12px",fontSize:13,color:"#2e7d32",border:"1px solid #c8e6c9",minWidth:0,maxWidth:150}}>
+                                <div style={{display:"flex",alignItems:"center",gap:6,minWidth:0}}>
+                                  <span style={{fontSize:11,color:"#a09880",flexShrink:0}}>→</span>
+                                  <div className="pill" style={{display:"flex",alignItems:"center",gap:6,background:"#e8f5e9",borderRadius:20,padding:"6px 12px",fontSize:13,color:"#2e7d32",border:"1px solid #c8e6c9",minWidth:0,maxWidth:140,overflow:"hidden"}}>
                                     <span style={{fontSize:9,color:"#66bb6a",flexShrink:0}}>●</span>
-                                    <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{rep.name}</span>
+                                    <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
                                     <span style={{fontSize:10,color:"#81c784",background:"#c8e6c9",borderRadius:20,padding:"1px 6px",flexShrink:0}}>sub</span>
                                   </div>
-                                  {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"3px 9px",fontSize:11,color:"#fff",cursor:"pointer",fontWeight:"bold",flexShrink:0}}>✕</button>}
+                                  {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:11,color:"#fff",cursor:"pointer",fontWeight:"bold",flexShrink:0}}>✕</button>}
                                 </div>
                               ):(
                                 !past&&(
@@ -610,7 +609,7 @@ export default function PadelBooking() {
               <p style={{color:"#7a7060",margin:"0 0 4px",fontSize:13}}><strong>{modal.name}</strong> · {modal.day} at {fmt(modal.hour)}</p>
               <p style={{color:"#a09880",margin:"0 0 4px",fontSize:13}}>Enter your PIN to skip this week only. You'll be back automatically next week.</p>
               {adminPinHash&&<p style={{color:"#b8a898",margin:"0 0 16px",fontSize:12}}>Forgotten your PIN? Ask the coach to skip the class for you.</p>}
-              <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handlePinVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
+              <input className="pin-input" type="password" inputMode="numeric" maxLength={4} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handlePinVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#f0ede4",border:"none",color:"#7a7060",fontSize:14}}>Cancel</button>
@@ -628,7 +627,7 @@ export default function PadelBooking() {
               </div>
               <p style={{color:"#7a7060",margin:"0 0 4px",fontSize:13}}>Enter your PIN to confirm removal.</p>
               {adminPinHash&&<p style={{color:"#b8a898",margin:"0 0 16px",fontSize:12}}>Forgotten your PIN? Ask the coach to cancel the class for you.</p>}
-              <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handlePinVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
+              <input className="pin-input" type="password" inputMode="numeric" maxLength={4} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handlePinVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#f0ede4",border:"none",color:"#7a7060",fontSize:14}}>Cancel</button>
@@ -655,7 +654,7 @@ export default function PadelBooking() {
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Restore booking?</h2>
               <p style={{color:"#7a7060",margin:"0 0 4px",fontSize:13}}>Enter <strong>{modal.name}</strong>'s PIN to return to this week's class.</p>
               {adminPinHash&&<p style={{color:"#b8a898",margin:"0 0 16px",fontSize:12}}>Forgotten your PIN? Ask the coach to restore the booking for you.</p>}
-              <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handleUndoSkipVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
+              <input className="pin-input" type="password" inputMode="numeric" maxLength={4} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handleUndoSkipVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#f0ede4",border:"none",color:"#7a7060",fontSize:14}}>Cancel</button>
@@ -686,8 +685,8 @@ export default function PadelBooking() {
               <div style={{fontSize:22,marginBottom:4}}>🔒</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Remove substitute?</h2>
               <p style={{color:"#7a7060",margin:"0 0 4px",fontSize:13}}>Enter <strong>{modal.repName}</strong>'s PIN to remove this substitution.</p>
-              <p style={{color:"#b8a898",margin:"0 0 16px",fontSize:12}}>Forgotten your PIN? Ask the coach to cancel the class for you.</p>
-              <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handleRemoveRepVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
+              <p style={{color:"#b8a898",margin:"0 0 16px",fontSize:12}}>Forgotten your PIN? Ask the coach to remove you.</p>
+              <input className="pin-input" type="password" inputMode="numeric" maxLength={4} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handleRemoveRepVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#f0ede4",border:"none",color:"#7a7060",fontSize:14}}>Cancel</button>
@@ -701,7 +700,7 @@ export default function PadelBooking() {
               <div style={{fontSize:22,marginBottom:4}}>🔐</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Set coach PIN</h2>
               <p style={{color:"#7a7060",margin:"0 0 20px",fontSize:13}}>First time using coach actions. Set a PIN (4–6 digits) that only you know.</p>
-              <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="New PIN" value={form.pin} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:10}}/>
+              <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••••" value={form.pin} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:10}}/>
               <input className="pin-input" type="password" inputMode="numeric" maxLength={6} placeholder="Confirm PIN" value={form.confirmPin} onKeyDown={e=>e.key==="Enter"&&handleAdminSetup()} onChange={e=>{setForm(f=>({...f,confirmPin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
@@ -742,27 +741,12 @@ export default function PadelBooking() {
             <div style={{background:"#fff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:4}}>🔐</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Coach PIN required</h2>
-              <p style={{color:"#7a7060",margin:"0 0 18px",fontSize:13}}>Enter your coach PIN to edit the class level.</p>
+              <p style={{color:"#7a7060",margin:"0 0 18px",fontSize:13}}>Enter your coach PIN to edit the class level for {modal.day}.</p>
               <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handleAdminVerifyEditLevel()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#f0ede4",border:"none",color:"#7a7060",fontSize:14}}>Cancel</button>
                 <button onClick={handleAdminVerifyEditLevel} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Continue</button>
-              </div>
-            </div>
-          )}
-
-          {modal.type==="admin-verify-level"&&(
-            <div style={{background:"#fff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
-              <div style={{fontSize:22,marginBottom:4}}>🔐</div>
-              <h2 style={{margin:"0 0 4px",fontSize:20}}>Set level for all slots?</h2>
-              <p style={{color:"#7a7060",margin:"0 0 4px",fontSize:13}}>This will apply <strong>"{modal.level||"(blank)"}"</strong> to all 5 time slots.</p>
-              <p style={{color:"#a09880",margin:"0 0 18px",fontSize:12}}>Enter your coach PIN to confirm.</p>
-              <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handleAdminVerifyLevelAll()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
-              {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
-              <div style={{display:"flex",gap:10}}>
-                <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#f0ede4",border:"none",color:"#7a7060",fontSize:14}}>Cancel</button>
-                <button onClick={handleAdminVerifyLevelAll} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#c8e84a",border:"none",color:"#1a1a2e",fontSize:14,fontWeight:"bold"}}>Set all slots</button>
               </div>
             </div>
           )}
