@@ -6,17 +6,36 @@ const SUPABASE_KEY = "sb_publishable_JnmOtNTTux_wONg0ULPPZA_0xebodgL";
 const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Sunday"];
 const DAY_SHORT = { Monday:"Mon",Tuesday:"Tue",Wednesday:"Wed",Thursday:"Thu",Friday:"Fri",Sunday:"Sun" };
 const HOURS = [17,18,19,20,21];
+const SUNDAY_HOURS = [10.5,11.5,12.5,13.5,14.5,15.5,16.5];
 const MAX_SLOTS = 4;
 const DEFAULT_LEVEL_TEMPLATE = { 17:"Medium beginner",18:"Medium to high beginner",19:"Medium intermediate",20:"Medium beginner",21:"" };
+const SUNDAY_LEVEL_TEMPLATE = { 10.5:"Low beginner",11.5:"Medium beginner",12.5:"Private",13.5:"Medium to high beginner",14.5:"High beginner",15.5:"Low to medium beginner",16.5:"Medium beginner" };
+
+function getDayHours(day) { return day==="Sunday" ? SUNDAY_HOURS : HOURS; }
 
 // Default levels are per-day (same template for each day initially)
 function buildDefaultLevels() {
   const out = {};
-  DAYS.forEach(day => { HOURS.forEach(h => { out[`${day}-${h}`] = DEFAULT_LEVEL_TEMPLATE[h]; }); });
+  DAYS.forEach(day => {
+    const hours = getDayHours(day);
+    const template = day==="Sunday" ? SUNDAY_LEVEL_TEMPLATE : DEFAULT_LEVEL_TEMPLATE;
+    hours.forEach(h => { out[`${day}-${h}`] = template[h]||""; });
+  });
   return out;
 }
 
-function fmt(h) { return `${h<=12?h:h-12}:00 ${h<12?"AM":"PM"}`; }
+function fmt(h) {
+  const hrs = Math.floor(h);
+  const mins = h % 1 === 0.5 ? "30" : "00";
+  const period = hrs < 12 ? "AM" : "PM";
+  const display = hrs <= 12 ? hrs : hrs - 12;
+  return `${display}:${mins} ${period}`;
+}
+
+function fmtEnd(h) {
+  const end = h + 1;
+  return fmt(end);
+}
 
 function getWeekDates(offsetWeeks=0) {
   const today = new Date();
@@ -32,7 +51,7 @@ function getWeekDates(offsetWeeks=0) {
 
 function fmtDate(date) { return date.toLocaleDateString("en-IE",{day:"numeric",month:"short"}); }
 function isToday(date) { return date.toDateString()===new Date().toDateString(); }
-function isPast(date,hour) { const s=new Date(date);s.setHours(hour,0,0,0);return s<new Date(); }
+function isPast(date,hour) { const s=new Date(date);s.setHours(Math.floor(hour),hour%1===0.5?30:0,0,0);return s<new Date(); }
 
 function weekKey(date) {
   const d=new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()));
@@ -96,7 +115,7 @@ export default function PadelBooking() {
 
   const weekDates = getWeekDates(weekOffset);
 
-  useEffect(()=>{ try { sessionStorage.setItem("weekOffset",weekOffset); } catch{} },[weekOffset]);
+  useEffect(()=>{ try { sessionStorage.setItem("weekOffset",weekOffset); } catch{} loadAll(); },[weekOffset]);
   useEffect(()=>{ try { if(activeDay) sessionStorage.setItem("activeDay",activeDay); } catch{} },[activeDay]);
 
   useEffect(()=>{
@@ -115,14 +134,24 @@ export default function PadelBooking() {
       if(Array.isArray(c)) setCancelled(c);
       if(Array.isArray(l) && l.length) {
         const lv = buildDefaultLevels();
+        const currentWeeks = {};
+        DAYS.forEach(day => { currentWeeks[day] = weekKey(getWeekDates(weekOffset)[day]); });
+        // Group by day-hour, pick current week first, then most recent
+        const grouped = {};
         l.forEach(row => {
-          // Support both old format {hour, level} and new format {day, hour, level}
-          if(row.day) {
-            lv[`${row.day}-${row.hour}`] = row.level;
-          } else {
-            // Old data: apply to all days
-            DAYS.forEach(day => { lv[`${day}-${row.hour}`] = row.level; });
-          }
+          const k = row.day ? `${row.day}-${row.hour}` : null;
+          if(!k) { DAYS.forEach(day => { lv[`${day}-${row.hour}`] = row.level; }); return; }
+          if(!grouped[k]) grouped[k] = [];
+          grouped[k].push(row);
+        });
+        Object.entries(grouped).forEach(([k, rows]) => {
+          const day = k.split('-')[0];
+          const currentWk = currentWeeks[day];
+          const current = rows.find(r => r.week_key === currentWk);
+          if(current) { lv[k] = current.level; return; }
+          // Fall back to most recent past week's level
+          const past = rows.filter(r => r.week_key && r.week_key <= currentWk).sort((a,b)=>b.week_key.localeCompare(a.week_key));
+          if(past.length) lv[k] = past[0].level;
         });
         setClassLevels(lv);
       }
@@ -179,8 +208,9 @@ export default function PadelBooking() {
   // We store as {day, hour, level} in Supabase. The table needs a `day` column.
   // We use hour as a string "Day-hour" for the unique key via the id field.
   async function saveClassLevel(day, hour, level) {
-    // Use a composite id so upsert works correctly per day+hour
-    await sb("class_levels", "POST", {id:`${day}-${hour}`, day, hour, level});
+    const wk=weekKey(weekDates[day]);
+    const id=`${wk}-${day}-${hour}`;
+    await sb("class_levels", "POST", {id, day, hour, level, week_key:wk});
     setClassLevels(prev=>({...prev,[`${day}-${hour}`]:level}));
   }
 
@@ -356,7 +386,7 @@ export default function PadelBooking() {
   function calcOpenSpots(days) {
     return days.reduce((acc,d)=>{
       const wk=weekKey(weekDates[d]);
-      return acc+HOURS.reduce((a,h)=>{
+      return acc+getDayHours(d).reduce((a,h)=>{
         const allRec=getAllRecurring(d,h);
         const skipped=getCancelledNames(`${wk}-${slotId(d,h)}`);
         const skipsNoSub=skipped.filter(name=>!getReplacement(d,h,name)).length;
@@ -482,7 +512,7 @@ export default function PadelBooking() {
           </div>
         ):(
           <div style={{display:"flex",flexDirection:"column",gap:10,animation:"slideUp 0.25s ease"}}>
-            {HOURS.map(hour=>{
+            {getDayHours(today).map(hour=>{
               const allRec=getAllRecurring(today,hour);
               const players=getPlayers(today,hour);
               const past=isPast(weekDates[today],hour);
@@ -495,7 +525,7 @@ export default function PadelBooking() {
                     <div>
                       <div>
                         <span style={{fontSize:17,fontWeight:"bold"}}>{fmt(hour)}</span>
-                        <span style={{color:"#a09880",fontSize:13,marginLeft:6}}>→ {fmt(hour+1)}</span>
+                        <span style={{color:"#a09880",fontSize:13,marginLeft:6}}>→ {fmtEnd(hour)}</span>
                       </div>
                       {editingLevel===hour?(
                         <div style={{marginTop:4,display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
@@ -579,7 +609,7 @@ export default function PadelBooking() {
                                     <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
                                     <span style={{fontSize:10,color:"#81c784",background:"#c8e6c9",borderRadius:20,padding:"1px 6px",flexShrink:0}}>sub</span>
                                   </div>
-                                  {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontWeight:"bold",flexShrink:0}}>✕</button>}
+                                  {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,flexShrink:0}}>✕</button>}
                                 </div>
                               </div>
                             ):(
