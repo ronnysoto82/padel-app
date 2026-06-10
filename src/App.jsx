@@ -290,7 +290,10 @@ export default function PadelBooking() {
     if(pin!==confirmPin){setPinError("PINs don't match");return;}
     const {day,hour}=modal;
     const all=getAllRecurring(day,hour);
-    if(getPlayers(day,hour).length>=MAX_SLOTS){showToast("Court is full!","err");return;}
+    const wk=weekKey(weekDates[day]);
+    const skippedNames=getCancelledNames(`${wk}-${slotId(day,hour)}`);
+    const subsCount=skippedNames.filter(name=>getReplacement(day,hour,name)).length;
+    if(getPlayers(day,hour).length+subsCount>=MAX_SLOTS){showToast("Court is full!","err");return;}
     if(all.map(p=>p.name.toLowerCase()).includes(name.toLowerCase())){setPinError("Name already in this slot");return;}
     const newPlayer={slot_id:slotId(day,hour),name,pin_hash:hashPin(pin)};
     await sb("recurring","POST",newPlayer);
@@ -411,7 +414,7 @@ export default function PadelBooking() {
         @keyframes popIn{from{opacity:0;transform:scale(0.93)}to{opacity:1;transform:scale(1)}}
         @keyframes toastSlide{from{opacity:0;transform:translateY(16px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
         @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-        .day-tab{transition:all 0.15s;cursor:pointer;}.day-tab:hover{background:#d4c9b0!important;}
+        .day-tab{transition:all 0.15s;cursor:pointer;}.day-tab:hover{background:#d4c9b0!important;}.day-tab.active{background:#1a1a2e!important;color:#f5f0e8!important;}
         .slot-row{transition:box-shadow 0.15s,transform 0.15s;}.slot-row:hover{box-shadow:0 4px 20px rgba(0,0,0,0.08);transform:translateY(-1px);}
         .week-nav:hover{background:#d4c9b0!important;}
         .pill:hover{filter:brightness(0.95);}
@@ -518,7 +521,11 @@ export default function PadelBooking() {
               const allRec=getAllRecurring(today,hour);
               const players=getPlayers(today,hour);
               const past=isPast(weekDates[today],hour);
-              const full=players.length>=MAX_SLOTS;
+              const wkKey=weekKey(weekDates[today]);
+              const skippedNames=getCancelledNames(`${wkKey}-${slotId(today,hour)}`);
+              const subsCount=skippedNames.filter(name=>getReplacement(today,hour,name)).length;
+              const effectiveCount=players.length+subsCount;
+              const full=effectiveCount>=MAX_SLOTS;
               const levelKey=`${today}-${hour}`;
 
               return (
