@@ -388,11 +388,13 @@ export default function PadelBooking() {
       const wk=weekKey(weekDates[d]);
       return acc+getDayHours(d).reduce((a,h)=>{
         const allRec=getAllRecurring(d,h);
-        const skipped=getCancelledNames(`${wk}-${slotId(d,h)}`);
-        const skipsNoSub=skipped.filter(name=>!getReplacement(d,h,name)).length;
-        const activePlayers=allRec.length-skipped.length;
-        const emptySlots=MAX_SLOTS-activePlayers-skipsNoSub;
-        return a+skipsNoSub+Math.max(0,emptySlots);
+        const skippedNames=getCancelledNames(`${wk}-${slotId(d,h)}`);
+        const skipsNoSub=skippedNames.filter(name=>!getReplacement(d,h,name)).length;
+        // active = recurring players who haven't skipped + subs filling skipped spots
+        const subsCount=skippedNames.length-skipsNoSub;
+        const active=(allRec.length-skippedNames.length)+subsCount;
+        const empty=Math.max(0,MAX_SLOTS-active-skipsNoSub);
+        return a+skipsNoSub+empty;
       },0);
     },0);
   }
@@ -477,7 +479,7 @@ export default function PadelBooking() {
                 flex:"0 0 auto",padding:"8px 14px",borderRadius:10,
                 border:blocked?"1.5px solid #c0392b":isTod&&!active?"1.5px solid #1a1a2e":"1.5px solid transparent",
                 background:blocked?(active?"#7b1010":"#fdecea"):active?"#1a1a2e":"#e8e0d0",
-                color:blocked?(active?"#fff":"#c0392b"):active?"#f5f0e8":"#1a1a2e",
+                color:blocked?(active?"#fff":"#c0392b"):active?"#fff":"#1a1a2e",
                 cursor:"pointer",textAlign:"center",minWidth:68,
               }}>
                 <div style={{fontSize:11,letterSpacing:1,textTransform:"uppercase",opacity:0.7}}>{blocked?"🔒":DAY_SHORT[day]}</div>
