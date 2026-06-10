@@ -253,6 +253,7 @@ export default function PadelBooking() {
   function openModal(type,extras={}){setModal({type,...extras});setForm({name:"",pin:"",confirmPin:""});setPinError("");}
 
   async function handleAdd() {
+    if(weekOffset<0){showToast("Can't book slots in a past week","err");return;}
     const name=form.name.trim(), pin=form.pin.trim(), confirmPin=form.confirmPin.trim();
     if(!name){setPinError("Enter a name");return;}
     if(pin.length!==4){setPinError("PIN must be exactly 4 digits");return;}
@@ -351,8 +352,23 @@ export default function PadelBooking() {
 
   // ── Derived ─────────────────────────────────────────────────────────────────
   const today=activeDay||"Monday";
-  const weekBooked=DAYS.reduce((acc,d)=>acc+HOURS.reduce((a,h)=>a+getPlayers(d,h).length,0),0);
-  const weekOpen=DAYS.length*HOURS.length*MAX_SLOTS-weekBooked;
+
+  function calcOpenSpots(days) {
+    return days.reduce((acc,d)=>{
+      const wk=weekKey(weekDates[d]);
+      return acc+HOURS.reduce((a,h)=>{
+        const allRec=getAllRecurring(d,h);
+        const skipped=getCancelledNames(`${wk}-${slotId(d,h)}`);
+        const skipsNoSub=skipped.filter(name=>!getReplacement(d,h,name)).length;
+        const activePlayers=allRec.length-skipped.length;
+        const emptySlots=MAX_SLOTS-activePlayers-skipsNoSub;
+        return a+skipsNoSub+Math.max(0,emptySlots);
+      },0);
+    },0);
+  }
+
+  const dayOpen=calcOpenSpots([today]);
+  const weekOpen=calcOpenSpots(DAYS);
 
   // ── RENDER ──────────────────────────────────────────────────────────────────
   return (
@@ -383,16 +399,14 @@ export default function PadelBooking() {
             </div>
           </div>
           <div style={{display:"flex",gap:10,flexWrap:"nowrap",marginTop:16}}>
-            {[
-              {label:"Weekly slots",val:DAYS.length*HOURS.length},
-              {label:"Booked",val:weekBooked},
-              {label:"Open spots",val:weekOpen},
-            ].map(s=>(
-              <div key={s.label} style={{flex:1,background:"rgba(255,255,255,0.06)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.08)",minWidth:0}}>
-                <div style={{fontSize:20,fontWeight:"bold",color:"#c8e84a"}}>{s.val}</div>
-                <div style={{fontSize:10,color:"#a09880",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{s.label}</div>
-              </div>
-            ))}
+            <div style={{flex:1,background:"rgba(255,255,255,0.06)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.08)",minWidth:0}}>
+              <div style={{fontSize:20,fontWeight:"bold",color:dayOpen>0?"#f97316":"#c8e84a"}}>{dayOpen}</div>
+              <div style={{fontSize:10,color:"#a09880",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Day's open slots</div>
+            </div>
+            <div style={{flex:1,background:"rgba(255,255,255,0.06)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.08)",minWidth:0}}>
+              <div style={{fontSize:20,fontWeight:"bold",color:weekOpen>0?"#f97316":"#c8e84a"}}>{weekOpen}</div>
+              <div style={{fontSize:10,color:"#a09880",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Week's open spots</div>
+            </div>
           </div>
         </div>
       </div>
@@ -518,7 +532,7 @@ export default function PadelBooking() {
                       if(!player) {
                         return (
                           <div key={i}
-                            onClick={()=>!past&&!full&&openModal("add",{day:today,hour})}
+                            onClick={()=>!past&&!full&&weekOffset>=0&&openModal("add",{day:today,hour})}
                             onMouseEnter={e=>{if(!past&&!full){e.currentTarget.style.background="#f0ede4";e.currentTarget.style.borderColor="#a09880";}}}
                             onMouseLeave={e=>{e.currentTarget.style.background="#faf8f4";e.currentTarget.style.borderColor="#ddd6c8";}}
                             style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",borderRadius:10,border:"1.5px dashed #ddd6c8",background:"#faf8f4",cursor:past||full?"default":"pointer",transition:"background 0.15s,border-color 0.15s"}}>
@@ -557,14 +571,16 @@ export default function PadelBooking() {
                           {/* ── sub row ── */}
                           {skipped&&(
                             rep?(
-                              <div style={{display:"flex",alignItems:"center",gap:8,paddingLeft:40}}>
+                              <div style={{display:"flex",alignItems:"center",gap:8,paddingLeft:40,flex:1}}>
                                 <span style={{fontSize:11,color:"#a09880",flexShrink:0}}>↳</span>
-                                <div className="pill" style={{display:"flex",alignItems:"center",gap:6,background:"#e8f5e9",borderRadius:20,padding:"6px 12px",fontSize:13,color:"#2e7d32",border:"1px solid #c8e6c9",minWidth:0,maxWidth:140,overflow:"hidden"}}>
-                                  <span style={{fontSize:9,color:"#66bb6a",flexShrink:0}}>●</span>
-                                  <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
-                                  <span style={{fontSize:10,color:"#81c784",background:"#c8e6c9",borderRadius:20,padding:"1px 6px",flexShrink:0}}>sub</span>
+                                <div style={{display:"flex",alignItems:"center",gap:8,flex:1,justifyContent:"space-between"}}>
+                                  <div className="pill" style={{display:"flex",alignItems:"center",gap:6,background:"#e8f5e9",borderRadius:20,padding:"6px 12px",fontSize:13,color:"#2e7d32",border:"1px solid #c8e6c9",minWidth:0,maxWidth:140,overflow:"hidden"}}>
+                                    <span style={{fontSize:9,color:"#66bb6a",flexShrink:0}}>●</span>
+                                    <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
+                                    <span style={{fontSize:10,color:"#81c784",background:"#c8e6c9",borderRadius:20,padding:"1px 6px",flexShrink:0}}>sub</span>
+                                  </div>
+                                  {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontWeight:"bold",flexShrink:0}}>✕</button>}
                                 </div>
-                                {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:6,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontWeight:"bold",flexShrink:0}}>✕</button>}
                               </div>
                             ):(
                               !past&&(
