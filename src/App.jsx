@@ -585,47 +585,47 @@ export default function PadelBooking() {
                       const rep=getReplacement(today,hour,name);
 
                       return (
-                        <div key={name} style={{display:"flex",flexDirection:"column",gap:4}}>
-                          {/* ── original player row ── */}
-                          <div style={{display:"flex",alignItems:"center",gap:8}}>
-                            <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:skipped?"#f5f0e8":"#ede8dc",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"#b0a898":"#1a1a2e",border:skipped?"1px dashed #ccc4b0":"none",textDecoration:skipped?"line-through":"none",opacity:skipped?0.75:1}}>
-                              <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
-                                <span style={{fontSize:11,color:skipped?"#b0a898":"#a09880",flexShrink:0,textDecoration:"none"}}>{i+1}</span>
-                                <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{name}</span>
-                              </div>
-                              {!past&&skipped&&!rep&&(
-                                <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#c8e84a",border:"none",borderRadius:20,padding:"1px 8px",fontSize:10,color:"#1a1a2e",fontWeight:"bold",cursor:"pointer",flexShrink:0,textDecoration:"none"}}>↩</button>
-                              )}
-                              {!past&&!skipped&&(
-                                <div style={{display:"flex",gap:4,flexShrink:0}}>
-                                  <button onClick={()=>openModal("pin-skip",{day:today,hour,name,action:"skip"})} style={{background:"#f97316",border:"none",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",lineHeight:1,textDecoration:"none"}}>Skip</button>
-                                  <button onClick={()=>openModal("pin-remove",{day:today,hour,name,action:"remove"})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,textDecoration:"none"}}>✕</button>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          {/* ── sub row ── */}
-                          {skipped&&(
-                            rep?(
-                              <div style={{display:"flex",alignItems:"center",gap:8,paddingLeft:24,flex:1}}>
-                                <span style={{fontSize:11,color:"#a09880",flexShrink:0}}>↳</span>
-                                <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:"#e8f5e9",borderRadius:20,padding:"9px 14px",fontSize:14,color:"#2e7d32",border:"1px solid #c8e6c9"}}>
-                                  <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0,overflow:"hidden"}}>
+                        <div key={name} style={{display:"flex",flexDirection:"column",gap:2}}>
+                          {rep?(
+                            /* ── Sub filling the slot (Option A) ── */
+                            <div style={{display:"flex",alignItems:"center",gap:8}}>
+                              <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:"#e8f5e9",borderRadius:20,padding:"9px 14px",fontSize:14,color:"#2e7d32",border:"1px solid #c8e6c9"}}>
+                                <div style={{display:"flex",flexDirection:"column",minWidth:0}}>
+                                  <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
                                     <span style={{fontSize:11,color:"#81c784",flexShrink:0}}>{i+1}</span>
-                                    <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
+                                    <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,fontWeight:"500"}}>{rep.name}</span>
                                     <span style={{fontSize:10,color:"#81c784",background:"#c8e6c9",borderRadius:20,padding:"1px 6px",flexShrink:0}}>sub</span>
                                   </div>
-                                  {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,flexShrink:0}}>✕</button>}
+                                  <span style={{fontSize:11,color:"#81c784",paddingLeft:20,marginTop:1}}>covering for {name}</span>
                                 </div>
+                                {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,flexShrink:0}}>✕</button>}
                               </div>
-                            ):(
-                              !past&&(
-                                <div style={{display:"flex",alignItems:"center",gap:8,paddingLeft:40}}>
-                                  <span style={{fontSize:11,color:"#a09880"}}>↳</span>
-                                  <button onClick={()=>openModal("add-rep",{day:today,hour,originalName:name})} style={{background:"none",border:"1.5px dashed #a5d6a7",borderRadius:20,padding:"5px 12px",fontSize:12,color:"#66bb6a",cursor:"pointer",fontStyle:"italic"}}>+ sub</button>
+                            </div>
+                          ):(
+                            /* ── Original player row ── */
+                            <div style={{display:"flex",alignItems:"center",gap:8}}>
+                              <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:skipped?"#f5f0e8":"#ede8dc",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"#b0a898":"#1a1a2e",border:skipped?"1px dashed #ccc4b0":"none",textDecoration:skipped?"line-through":"none",opacity:skipped?0.75:1}}>
+                                <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
+                                  <span style={{fontSize:11,color:skipped?"#b0a898":"#a09880",flexShrink:0,textDecoration:"none"}}>{i+1}</span>
+                                  <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{name}</span>
                                 </div>
-                              )
-                            )
+                                {!past&&skipped&&!rep&&(
+                                  <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#c8e84a",border:"none",borderRadius:20,padding:"1px 8px",fontSize:10,color:"#1a1a2e",fontWeight:"bold",cursor:"pointer",flexShrink:0,textDecoration:"none"}}>↩</button>
+                                )}
+                                {!past&&!skipped&&(
+                                  <div style={{display:"flex",gap:4,flexShrink:0}}>
+                                    <button onClick={()=>openModal("pin-skip",{day:today,hour,name,action:"skip"})} style={{background:"#f97316",border:"none",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",lineHeight:1,textDecoration:"none"}}>Skip</button>
+                                    <button onClick={()=>openModal("pin-remove",{day:today,hour,name,action:"remove"})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,textDecoration:"none"}}>✕</button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          {/* ── + sub button when skipped with no rep ── */}
+                          {skipped&&!rep&&!past&&(
+                            <div style={{paddingLeft:14}}>
+                              <button onClick={()=>openModal("add-rep",{day:today,hour,originalName:name})} style={{background:"none",border:"1.5px dashed #a5d6a7",borderRadius:20,padding:"5px 14px",fontSize:12,color:"#66bb6a",cursor:"pointer",fontStyle:"italic"}}>+ add sub</button>
+                            </div>
                           )}
                         </div>
                       );
