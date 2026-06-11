@@ -593,14 +593,14 @@ export default function PadelBooking() {
                                 <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
                                   <span style={{fontSize:11,color:"#81c784",flexShrink:0}}>{i+1}</span>
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
-                                  <span style={{fontSize:10,color:"#fff",background:"#2e7d32",borderRadius:20,padding:"2px 8px",flexShrink:0}}>Sub for {name}</span>
+                                  <span style={{fontSize:10,color:"#fff",background:"#43a047",borderRadius:20,padding:"2px 8px",flexShrink:0}}>Sub for {name}</span>
                                 </div>
                                 {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,flexShrink:0}}>✕</button>}
                               </div>
                             ):(
                               /* ── Original player ── */
-                              <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:skipped?"#e8e4dc":"#ede8dc",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"#8a8070":"#1a1a2e",border:"none",opacity:skipped?0.55:1}}>
-                                <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
+                              <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:skipped?"#e8e4dc":"#ede8dc",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"#8a8070":"#1a1a2e",border:"none"}}>
+                                <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0,opacity:skipped?0.55:1}}>
                                   <span style={{fontSize:11,color:skipped?"#a09880":"#a09880",flexShrink:0}}>{i+1}</span>
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,textDecoration:skipped?"line-through":"none"}}>{name}</span>
                                 </div>
