@@ -589,20 +589,15 @@ export default function PadelBooking() {
                           {/* ── original player row ── */}
                           <div style={{display:"flex",alignItems:"center",gap:8}}>
                             <span style={{fontSize:11,color:"#a09880",width:16,textAlign:"center",flexShrink:0}}>{i+1}</span>
-                            <div style={{display:"flex",alignItems:"center",gap:8,flex:1,minWidth:0,justifyContent:"space-between"}}>
-                              <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
-                                <div className="pill" style={{display:"flex",alignItems:"center",gap:6,minWidth:0,maxWidth:160,background:skipped?"#f5f0e8":"#ede8dc",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"#b0a898":"#1a1a2e",border:skipped?"1px dashed #ccc4b0":"none",textDecoration:skipped?"line-through":"none",opacity:skipped?0.75:1}}>
-                                  
-                                  <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{name}</span>
-                                </div>
-                                {!past&&skipped&&!rep&&(
-                                  <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#c8e84a",border:"none",borderRadius:20,padding:"1px 8px",fontSize:10,color:"#1a1a2e",fontWeight:"bold",cursor:"pointer",flexShrink:0}}>↩</button>
-                                )}
-                              </div>
+                            <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:skipped?"#f5f0e8":"#ede8dc",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"#b0a898":"#1a1a2e",border:skipped?"1px dashed #ccc4b0":"none",textDecoration:skipped?"line-through":"none",opacity:skipped?0.75:1}}>
+                              <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{name}</span>
+                              {!past&&skipped&&!rep&&(
+                                <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#c8e84a",border:"none",borderRadius:20,padding:"1px 8px",fontSize:10,color:"#1a1a2e",fontWeight:"bold",cursor:"pointer",flexShrink:0,textDecoration:"none"}}>↩</button>
+                              )}
                               {!past&&!skipped&&(
                                 <div style={{display:"flex",gap:4,flexShrink:0}}>
-                                  <button onClick={()=>openModal("pin-skip",{day:today,hour,name,action:"skip"})} style={{background:"#f97316",border:"none",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",lineHeight:1}}>Skip</button>
-                                  <button onClick={()=>openModal("pin-remove",{day:today,hour,name,action:"remove"})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1}}>✕</button>
+                                  <button onClick={()=>openModal("pin-skip",{day:today,hour,name,action:"skip"})} style={{background:"#f97316",border:"none",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",lineHeight:1,textDecoration:"none"}}>Skip</button>
+                                  <button onClick={()=>openModal("pin-remove",{day:today,hour,name,action:"remove"})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,textDecoration:"none"}}>✕</button>
                                 </div>
                               )}
                             </div>
@@ -612,9 +607,8 @@ export default function PadelBooking() {
                             rep?(
                               <div style={{display:"flex",alignItems:"center",gap:8,paddingLeft:40,flex:1}}>
                                 <span style={{fontSize:11,color:"#a09880",flexShrink:0}}>↳</span>
-                                <div style={{display:"flex",alignItems:"center",gap:8,flex:1,justifyContent:"space-between"}}>
-                                  <div className="pill" style={{display:"flex",alignItems:"center",gap:6,background:"#e8f5e9",borderRadius:20,padding:"9px 14px",fontSize:14,color:"#2e7d32",border:"1px solid #c8e6c9",minWidth:0,maxWidth:140,overflow:"hidden"}}>
-                                    
+                                <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:"#e8f5e9",borderRadius:20,padding:"9px 14px",fontSize:14,color:"#2e7d32",border:"1px solid #c8e6c9"}}>
+                                  <div style={{display:"flex",alignItems:"center",gap:6,minWidth:0,overflow:"hidden"}}>
                                     <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
                                     <span style={{fontSize:10,color:"#81c784",background:"#c8e6c9",borderRadius:20,padding:"1px 6px",flexShrink:0}}>sub</span>
                                   </div>
