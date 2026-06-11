@@ -591,7 +591,7 @@ export default function PadelBooking() {
                             <span style={{fontSize:11,color:"#a09880",width:16,textAlign:"center",flexShrink:0}}>{i+1}</span>
                             <div style={{display:"flex",alignItems:"center",gap:8,flex:1,minWidth:0,justifyContent:"space-between"}}>
                               <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
-                                <div className="pill" style={{display:"flex",alignItems:"center",gap:6,minWidth:0,maxWidth:160,background:skipped?"#f5f0e8":"#ede8dc",borderRadius:20,padding:"6px 12px",fontSize:13,color:skipped?"#b0a898":"#1a1a2e",border:skipped?"1px dashed #ccc4b0":"none",textDecoration:skipped?"line-through":"none",opacity:skipped?0.75:1}}>
+                                <div className="pill" style={{display:"flex",alignItems:"center",gap:6,minWidth:0,maxWidth:160,background:skipped?"#f5f0e8":"#ede8dc",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"#b0a898":"#1a1a2e",border:skipped?"1px dashed #ccc4b0":"none",textDecoration:skipped?"line-through":"none",opacity:skipped?0.75:1}}>
                                   <span style={{fontSize:9,opacity:0.4,flexShrink:0}}>●</span>
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{name}</span>
                                 </div>
