@@ -602,10 +602,10 @@ export default function PadelBooking() {
                               <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:skipped?"#e8e4dc":"#ede8dc",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"#8a8070":"#1a1a2e",border:"none",opacity:skipped?0.55:1}}>
                                 <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
                                   <span style={{fontSize:11,color:skipped?"#a09880":"#a09880",flexShrink:0}}>{i+1}</span>
-                                  <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{name}</span>
+                                  <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,textDecoration:skipped?"line-through":"none"}}>{name}</span>
                                 </div>
                                 {!past&&skipped&&!rep&&(
-                                  <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#c8e84a",border:"none",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#1a1a2e",fontWeight:"bold",cursor:"pointer",fontFamily:"inherit",lineHeight:1,flexShrink:0}}>↩ Restore</button>
+                                  <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#2e7d32",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",fontWeight:"bold",cursor:"pointer",fontFamily:"inherit",lineHeight:1,flexShrink:0}}>↩</button>
                                 )}
                                 {!past&&!skipped&&(
                                   <div style={{display:"flex",gap:4,flexShrink:0}}>
