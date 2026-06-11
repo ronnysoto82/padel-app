@@ -483,10 +483,10 @@ export default function PadelBooking() {
                 border:blocked?"1.5px solid #c0392b":isTod&&!active?"1.5px solid #1a1a2e":"1.5px solid transparent",
                 background:blocked?(active?"#7b1010":"#fdecea"):active?"#1a1a2e":"#e8e0d0",
                 color:blocked?(active?"#fff":"#c0392b"):active?"#fff":"#1a1a2e",
-                cursor:"pointer",textAlign:"center",minWidth:68,
+                cursor:"pointer",textAlign:"center",minWidth:68,opacity:blocked?0.6:1,
               }}>
-                <div style={{fontSize:11,letterSpacing:1,textTransform:"uppercase",opacity:0.7}}>{blocked?"🔒":DAY_SHORT[day]}</div>
-                <div style={{fontSize:14,fontWeight:"bold",marginTop:1}}>
+                <div style={{fontSize:11,letterSpacing:1,textTransform:"uppercase",opacity:0.7}}>{blocked?"🔒 ":""}{DAY_SHORT[day]}</div>
+                <div style={{fontSize:14,fontWeight:"bold",marginTop:1,textDecoration:blocked?"line-through":"none"}}>
                   {fmtDate(d)}
                   {isTod&&!blocked&&<span style={{display:"block",width:5,height:5,borderRadius:"50%",background:"#c8e84a",margin:"2px auto 0"}}/>}
                 </div>
