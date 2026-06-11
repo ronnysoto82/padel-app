@@ -593,7 +593,7 @@ export default function PadelBooking() {
                                 <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
                                   <span style={{fontSize:11,color:"#81c784",flexShrink:0}}>{i+1}</span>
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
-                                  <span style={{fontSize:10,color:"#81c784",background:"#c8e6c9",borderRadius:20,padding:"1px 6px",flexShrink:0}}>sub</span>
+                                  <span style={{fontSize:10,color:"#81c784",background:"#c8e6c9",borderRadius:20,padding:"1px 6px",flexShrink:0}}>Sub for {name}</span>
                                 </div>
                                 {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,flexShrink:0}}>✕</button>}
                               </div>
@@ -605,7 +605,7 @@ export default function PadelBooking() {
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{name}</span>
                                 </div>
                                 {!past&&skipped&&!rep&&(
-                                  <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#c8e84a",border:"none",borderRadius:20,padding:"1px 8px",fontSize:10,color:"#1a1a2e",fontWeight:"bold",cursor:"pointer",flexShrink:0}}>↩</button>
+                                  <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#c8e84a",border:"none",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#1a1a2e",fontWeight:"bold",cursor:"pointer",fontFamily:"inherit",lineHeight:1,flexShrink:0}}>↩ Restore</button>
                                 )}
                                 {!past&&!skipped&&(
                                   <div style={{display:"flex",gap:4,flexShrink:0}}>
