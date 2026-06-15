@@ -589,7 +589,7 @@ export default function PadelBooking() {
                           <div style={{display:"flex",alignItems:"center",gap:8}}>
                             {rep?(
                               /* ── Sub in same position, swapped colour ── */
-                              <div className="pill" onClick={()=>openModal("sub-info",{repName:rep.name,originalName:name})} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:"#e8f5e9",borderRadius:20,padding:"9px 14px",fontSize:14,color:"#2e7d32",border:"1px solid #c8e6c9",cursor:"pointer"}}>
+                              <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:"#e8f5e9",borderRadius:20,padding:"9px 14px",fontSize:14,color:"#2e7d32",border:"1px solid #c8e6c9"}}>
                                 <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
                                   <span style={{fontSize:11,color:"#81c784",flexShrink:0}}>{i+1}</span>
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
@@ -616,6 +616,9 @@ export default function PadelBooking() {
                               </div>
                             )}
                           </div>
+                          {rep&&(
+                            <div style={{paddingLeft:14,fontSize:11,color:"#81c784"}}>Sub for {name}</div>
+                          )}
                           {/* ── + sub button when skipped with no rep ── */}
                           {skipped&&!rep&&!past&&(
                             <div style={{paddingLeft:14}}>
@@ -792,18 +795,8 @@ export default function PadelBooking() {
             </div>
           )}
 
-          {modal.type==="sub-info"&&(
-            <div style={{background:"#fff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)",textAlign:"center"}}>
-              <div style={{fontSize:32,marginBottom:12}}>🔄</div>
-              <h2 style={{margin:"0 0 10px",fontSize:20}}>{modal.repName}</h2>
-              <p style={{color:"#7a7060",fontSize:14,margin:"0 0 20px"}}>is subbing for <strong>{modal.originalName}</strong> this week</p>
-              <button onClick={()=>setModal(null)} style={{width:"100%",padding:11,borderRadius:10,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Close</button>
-            </div>
-          )}
+          {modal.type==="admin-verify-edit-level"&&(
             <div style={{background:"#fff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
-              <div style={{fontSize:22,marginBottom:4}}>🔐</div>
-              <h2 style={{margin:"0 0 4px",fontSize:20}}>Coach PIN required</h2>
-              <p style={{color:"#7a7060",margin:"0 0 18px",fontSize:13}}>Enter your coach PIN to edit the class level for {modal.day}.</p>
               <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handleAdminVerifyEditLevel()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"#f9f6f0",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
