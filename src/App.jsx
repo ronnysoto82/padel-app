@@ -589,7 +589,7 @@ export default function PadelBooking() {
                           <div style={{display:"flex",alignItems:"center",gap:8}}>
                             {rep?(
                               /* ── Sub in same position, swapped colour ── */
-                              <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:"#e8f5e9",borderRadius:20,padding:"9px 14px",fontSize:14,color:"#2e7d32",border:"1px solid #c8e6c9"}}>
+                              <div className="pill" onClick={()=>openModal("sub-info",{repName:rep.name,originalName:name})} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:"#e8f5e9",borderRadius:20,padding:"9px 14px",fontSize:14,color:"#2e7d32",border:"1px solid #c8e6c9",cursor:"pointer"}}>
                                 <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
                                   <span style={{fontSize:11,color:"#81c784",flexShrink:0}}>{i+1}</span>
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
@@ -792,7 +792,14 @@ export default function PadelBooking() {
             </div>
           )}
 
-          {modal.type==="admin-verify-edit-level"&&(
+          {modal.type==="sub-info"&&(
+            <div style={{background:"#fff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)",textAlign:"center"}}>
+              <div style={{fontSize:32,marginBottom:12}}>🔄</div>
+              <h2 style={{margin:"0 0 10px",fontSize:20}}>{modal.repName}</h2>
+              <p style={{color:"#7a7060",fontSize:14,margin:"0 0 20px"}}>is subbing for <strong>{modal.originalName}</strong> this week</p>
+              <button onClick={()=>setModal(null)} style={{width:"100%",padding:11,borderRadius:10,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Close</button>
+            </div>
+          )}
             <div style={{background:"#fff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:4}}>🔐</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Coach PIN required</h2>
