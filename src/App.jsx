@@ -776,13 +776,13 @@ export default function PadelBooking() {
 
             function buildWhatsAppText() {
               const header = `*${modal.title} — Celbridge Padel Academy*\n${fmtDate(weekDates["Monday"])} – ${fmtDate(weekDates["Sunday"])}\n\n`;
-              if(detail.length===0) return header + "✅ No open spots this week!";
+              if(detail.length===0) return header + "✅ No open spots this week!\n\nhttps://celbridge-padel-academy.vercel.app/";
               return header + detail.map(({day,hour,empty,skippedNoSubNames})=>{
                 let line = `📅 *${day} ${fmtDate(weekDates[day])} · ${fmt(hour)}*`;
                 if(skippedNoSubNames.length) line += `\n⏸ Skipping: ${skippedNoSubNames.join(", ")}`;
                 if(empty>0) line += `\n🟠 ${empty} unfilled ${empty===1?"spot":"spots"}`;
                 return line;
-              }).join("\n\n");
+              }).join("\n\n") + "\n\nhttps://celbridge-padel-academy.vercel.app/";
             }
 
             function shareWhatsApp() {
@@ -824,7 +824,10 @@ export default function PadelBooking() {
                 )}
                 <div style={{display:"flex",gap:10,marginTop:16}}>
                   <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#f0ede4",border:"none",color:"#7a7060",fontSize:14}}>Close</button>
-                  <button onClick={shareWhatsApp} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#25D366",border:"none",color:"#fff",fontSize:14,fontWeight:"bold"}}>📲 Share on WhatsApp</button>
+                  <button onClick={shareWhatsApp} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#25D366",border:"none",color:"#fff",fontSize:14,fontWeight:"bold",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+                    <svg viewBox="0 0 32 32" width="18" height="18" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.82 3 3 8.82 3 16c0 2.3.6 4.5 1.7 6.4L3 29l6.8-1.7A13 13 0 0 0 16 29c7.18 0 13-5.82 13-13S23.18 3 16 3zm0 23.8a11.7 11.7 0 0 1-5.9-1.6l-.4-.25-4.04 1 1-3.93-.27-.42A11.8 11.8 0 1 1 16 26.8zm6.44-8.87c-.35-.18-2.08-1.03-2.4-1.14-.33-.12-.57-.18-.81.18-.24.35-.93 1.14-1.14 1.38-.2.23-.42.26-.77.09-.35-.18-1.48-.55-2.82-1.74-1.04-.93-1.75-2.08-1.95-2.43-.2-.35-.02-.54.15-.72.16-.16.35-.42.53-.63.18-.2.24-.35.35-.58.12-.23.06-.44-.03-.62-.09-.18-.81-1.95-1.11-2.67-.29-.7-.59-.6-.81-.61h-.69c-.24 0-.62.09-.94.44-.33.35-1.25 1.22-1.25 2.98s1.28 3.46 1.46 3.7c.18.23 2.52 3.85 6.1 5.4.85.37 1.52.59 2.03.75.86.27 1.63.23 2.25.14.69-.1 2.08-.85 2.37-1.67.3-.82.3-1.52.2-1.67-.08-.15-.32-.24-.67-.42z"/></svg>
+                    Share on WhatsApp
+                  </button>
                 </div>
               </div>
             );
