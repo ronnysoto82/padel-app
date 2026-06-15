@@ -626,7 +626,7 @@ export default function PadelBooking() {
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,textDecoration:skipped?"line-through":"none"}}>{name}</span>
                                 </div>
                                 {!past&&skipped&&!rep&&(
-                                  <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#2e7d32",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",fontWeight:"bold",cursor:"pointer",fontFamily:"inherit",lineHeight:1,flexShrink:0}}>↩</button>
+                                  <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#2e7d32",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",fontWeight:"bold",cursor:"pointer",fontFamily:"inherit",lineHeight:1,flexShrink:0}}>↺</button>
                                 )}
                                 {!past&&!skipped&&(
                                   <div style={{display:"flex",gap:4,flexShrink:0}}>
@@ -725,7 +725,7 @@ export default function PadelBooking() {
 
           {modal.type==="pin-undo-skip"&&(
             <div style={{background:"#fff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
-              <div style={{fontSize:22,marginBottom:4}}>↩</div>
+              <div style={{fontSize:22,marginBottom:4}}>↺</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Restore booking?</h2>
               <p style={{color:"#7a7060",margin:"0 0 4px",fontSize:13}}>Enter <strong>{modal.name}</strong>'s PIN to return to this week's class.</p>
               {adminPinHash&&<p style={{color:"#b8a898",margin:"0 0 16px",fontSize:12}}>Forgotten your PIN? Ask the coach to restore the booking for you.</p>}
@@ -787,7 +787,7 @@ export default function PadelBooking() {
                     {detail.map(({day,hour,open,empty,skippedNoSubNames})=>(
                       <div key={`${day}-${hour}`} style={{background:"#faf8f4",borderRadius:12,padding:"12px 14px",border:"1.5px solid #f0ede4"}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:skippedNoSubNames.length?8:0}}>
-                          <span style={{fontWeight:"bold",fontSize:14,color:"#1a1a2e"}}>{day} · {fmt(hour)}</span>
+                          <span style={{fontWeight:"bold",fontSize:14,color:"#1a1a2e"}}>{day} {fmtDate(weekDates[day])} · {fmt(hour)}</span>
                           <span style={{fontSize:12,background:open>0?"#fdecea":"#e8f5e9",color:open>0?"#c0392b":"#2e7d32",borderRadius:20,padding:"2px 10px",fontWeight:"bold"}}>{open} open</span>
                         </div>
                         {skippedNoSubNames.length>0&&(
