@@ -773,6 +773,23 @@ export default function PadelBooking() {
 
           {modal.type==="open-slots-summary"&&(()=>{
             const detail = getOpenSlotsDetail(modal.days);
+
+            function buildWhatsAppText() {
+              const header = `*${modal.title} — Celbridge Padel Academy*\n${fmtDate(weekDates["Monday"])} – ${fmtDate(weekDates["Sunday"])}\n\n`;
+              if(detail.length===0) return header + "✅ No open spots this week!";
+              return header + detail.map(({day,hour,empty,skippedNoSubNames})=>{
+                let line = `📅 *${day} ${fmtDate(weekDates[day])} · ${fmt(hour)}*`;
+                if(skippedNoSubNames.length) line += `\n⏸ Skipping: ${skippedNoSubNames.join(", ")}`;
+                if(empty>0) line += `\n🟠 ${empty} unfilled ${empty===1?"spot":"spots"}`;
+                return line;
+              }).join("\n\n");
+            }
+
+            function shareWhatsApp() {
+              const text = encodeURIComponent(buildWhatsAppText());
+              window.open(`https://wa.me/?text=${text}`, "_blank");
+            }
+
             return (
               <div style={{background:"#fff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:400,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)",maxHeight:"80vh",display:"flex",flexDirection:"column"}}>
                 <h2 style={{margin:"0 0 4px",fontSize:20}}>{modal.title}</h2>
@@ -805,7 +822,10 @@ export default function PadelBooking() {
                     ))}
                   </div>
                 )}
-                <button onClick={()=>setModal(null)} style={{marginTop:16,width:"100%",padding:11,borderRadius:10,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Close</button>
+                <div style={{display:"flex",gap:10,marginTop:16}}>
+                  <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#f0ede4",border:"none",color:"#7a7060",fontSize:14}}>Close</button>
+                  <button onClick={shareWhatsApp} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#25D366",border:"none",color:"#fff",fontSize:14,fontWeight:"bold"}}>📲 Share on WhatsApp</button>
+                </div>
               </div>
             );
           })()}
