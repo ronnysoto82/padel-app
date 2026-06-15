@@ -405,6 +405,27 @@ export default function PadelBooking() {
   const dayOpen=calcOpenSpots([today]);
   const weekOpen=calcOpenSpots(DAYS);
 
+  function getOpenSlotsDetail(days) {
+    const detail = [];
+    days.forEach(d => {
+      const wk = weekKey(weekDates[d]);
+      getDayHours(d).forEach(h => {
+        const allRec = getAllRecurring(d,h);
+        const skippedNames = getCancelledNames(`${wk}-${slotId(d,h)}`);
+        const skipsNoSub = skippedNames.filter(name=>!getReplacement(d,h,name)).length;
+        const subsCount = skippedNames.length - skipsNoSub;
+        const active = (allRec.length - skippedNames.length) + subsCount;
+        const empty = Math.max(0, MAX_SLOTS - active - skipsNoSub);
+        const open = skipsNoSub + empty;
+        if(open > 0) {
+          const skippedNoSubNames = skippedNames.filter(name=>!getReplacement(d,h,name));
+          detail.push({ day:d, hour:h, open, empty, skippedNoSubNames });
+        }
+      });
+    });
+    return detail;
+  }
+
   // ── RENDER ──────────────────────────────────────────────────────────────────
   return (
     <div style={{minHeight:"100vh",background:"#f5f0e8",fontFamily:"'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif",color:"#1a1a2e"}}>
@@ -434,11 +455,11 @@ export default function PadelBooking() {
             </div>
           </div>
           <div style={{display:"flex",gap:10,flexWrap:"nowrap",marginTop:16}}>
-            <div style={{flex:1,background:"rgba(255,255,255,0.06)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.08)",minWidth:0}}>
+            <div onClick={()=>openModal("open-slots-summary",{days:[today],title:"Day's Open Slots"})} style={{flex:1,background:"rgba(255,255,255,0.06)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.08)",minWidth:0,cursor:"pointer"}}>
               <div style={{fontSize:20,fontWeight:"bold",color:dayOpen>0?"#f97316":"#c8e84a"}}>{dayOpen}</div>
               <div style={{fontSize:10,color:"#a09880",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Day's open slots</div>
             </div>
-            <div style={{flex:1,background:"rgba(255,255,255,0.06)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.08)",minWidth:0}}>
+            <div onClick={()=>openModal("open-slots-summary",{days:DAYS,title:"Week's Open Spots"})} style={{flex:1,background:"rgba(255,255,255,0.06)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.08)",minWidth:0,cursor:"pointer"}}>
               <div style={{fontSize:20,fontWeight:"bold",color:weekOpen>0?"#f97316":"#c8e84a"}}>{weekOpen}</div>
               <div style={{fontSize:10,color:"#a09880",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Week's open spots</div>
             </div>
@@ -616,9 +637,6 @@ export default function PadelBooking() {
                               </div>
                             )}
                           </div>
-                          {rep&&(
-                            <div style={{paddingLeft:14,fontSize:11,color:"#81c784"}}>Sub for {name}</div>
-                          )}
                           {/* ── + sub button when skipped with no rep ── */}
                           {skipped&&!rep&&!past&&(
                             <div style={{paddingLeft:14}}>
@@ -752,6 +770,45 @@ export default function PadelBooking() {
               </div>
             </div>
           )}
+
+          {modal.type==="open-slots-summary"&&(()=>{
+            const detail = getOpenSlotsDetail(modal.days);
+            return (
+              <div style={{background:"#fff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:400,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)",maxHeight:"80vh",display:"flex",flexDirection:"column"}}>
+                <h2 style={{margin:"0 0 4px",fontSize:20}}>{modal.title}</h2>
+                <p style={{color:"#7a7060",fontSize:13,margin:"0 0 16px"}}>{fmtDate(weekDates["Monday"])} – {fmtDate(weekDates["Sunday"])}</p>
+                {detail.length===0?(
+                  <div style={{textAlign:"center",padding:"32px 0",color:"#a09880"}}>
+                    <div style={{fontSize:32,marginBottom:8}}>✅</div>
+                    <p style={{margin:0,fontSize:14}}>No open spots!</p>
+                  </div>
+                ):(
+                  <div style={{overflowY:"auto",flex:1,display:"flex",flexDirection:"column",gap:10}}>
+                    {detail.map(({day,hour,open,empty,skippedNoSubNames})=>(
+                      <div key={`${day}-${hour}`} style={{background:"#faf8f4",borderRadius:12,padding:"12px 14px",border:"1.5px solid #f0ede4"}}>
+                        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:skippedNoSubNames.length?8:0}}>
+                          <span style={{fontWeight:"bold",fontSize:14,color:"#1a1a2e"}}>{day} · {fmt(hour)}</span>
+                          <span style={{fontSize:12,background:open>0?"#fdecea":"#e8f5e9",color:open>0?"#c0392b":"#2e7d32",borderRadius:20,padding:"2px 10px",fontWeight:"bold"}}>{open} open</span>
+                        </div>
+                        {skippedNoSubNames.length>0&&(
+                          <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+                            {skippedNoSubNames.map(n=>(
+                              <span key={n} style={{fontSize:11,background:"#f5f0e8",borderRadius:20,padding:"2px 8px",color:"#7a6050"}}>⏸ {n}</span>
+                            ))}
+                            {empty>0&&<span style={{fontSize:11,background:"#fdecea",borderRadius:20,padding:"2px 8px",color:"#c0392b"}}>{empty} unfilled {empty===1?"spot":"spots"}</span>}
+                          </div>
+                        )}
+                        {skippedNoSubNames.length===0&&empty>0&&(
+                          <span style={{fontSize:11,background:"#fdecea",borderRadius:20,padding:"2px 8px",color:"#c0392b"}}>{empty} unfilled {empty===1?"spot":"spots"}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <button onClick={()=>setModal(null)} style={{marginTop:16,width:"100%",padding:11,borderRadius:10,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Close</button>
+              </div>
+            );
+          })()}
 
           {modal.type==="admin-setup"&&(
             <div style={{background:"#fff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:360,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
