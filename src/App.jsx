@@ -431,6 +431,8 @@ export default function PadelBooking() {
     <div style={{minHeight:"100vh",background:"#f5f0e8",fontFamily:"'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif",color:"#1a1a2e"}}>
       <style>{`
         *{box-sizing:border-box;}::-webkit-scrollbar{display:none;}
+        @media (prefers-color-scheme: dark) { html { filter: none !important; } }
+        html, body { background-color: #f5f0e8 !important; color: #1a1a2e !important; }
         @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         @keyframes popIn{from{opacity:0;transform:scale(0.93)}to{opacity:1;transform:scale(1)}}
         @keyframes toastSlide{from{opacity:0;transform:translateY(16px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -793,7 +795,7 @@ export default function PadelBooking() {
             return (
               <div style={{background:"#fff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:400,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)",maxHeight:"80vh",display:"flex",flexDirection:"column"}}>
                 <h2 style={{margin:"0 0 4px",fontSize:20}}>{modal.title}</h2>
-                <p style={{color:"#7a7060",fontSize:13,margin:"0 0 16px"}}>{fmtDate(weekDates["Monday"])} – {fmtDate(weekDates["Sunday"])}</p>
+                <p style={{color:"#7a7060",fontSize:13,margin:"0 0 16px"}}>{modal.days.length===1?fmtDate(weekDates[modal.days[0]]):fmtDate(weekDates["Monday"])+" – "+fmtDate(weekDates["Sunday"])}</p>
                 {detail.length===0?(
                   <div style={{textAlign:"center",padding:"32px 0",color:"#a09880"}}>
                     <div style={{fontSize:32,marginBottom:8}}>✅</div>
