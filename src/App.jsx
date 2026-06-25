@@ -428,50 +428,50 @@ export default function PadelBooking() {
 
   // ── RENDER ──────────────────────────────────────────────────────────────────
   return (
-    <div style={{minHeight:"100vh",background:"var(--bg-page)",fontFamily:"'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif",color:"var(--text-primary)"}}>
+    <div style={{minHeight:"100vh",background:"#f0f2f5",fontFamily:"'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif",color:"var(--text-primary)"}}>
       <style>{`
         *{box-sizing:border-box;}::-webkit-scrollbar{display:none;}
-        html, body { background-color: #f5f0e8 !important; color: #1a1a2e !important; }
+        html, body { background-color: #f0f2f5 !important; color: #1a1a2e !important; }
 
         :root {
-          --bg-page: #f5f0e8;
-          --bg-header: #1a1a2e;
+          --bg-page: #f0f2f5;
+          --bg-header: #2B4EFF;
           --bg-card: #ffffff;
-          --bg-pill: #ede8dc;
-          --bg-pill-skipped: #e8e4dc;
-          --bg-input: #f9f6f0;
-          --bg-slot-empty: #faf8f4;
-          --bg-tab: #e8e0d0;
-          --bg-tab-hover: #d4c9b0;
+          --bg-pill: #f0f0f0;
+          --bg-pill-skipped: #e8e8e8;
+          --bg-input: #f5f5f5;
+          --bg-slot-empty: #f9f9f9;
+          --bg-tab: #ffffff;
+          --bg-tab-hover: #f0f2f5;
           --bg-modal-overlay: rgba(0,0,0,0.45);
-          --bg-summary-slot: #faf8f4;
+          --bg-summary-slot: #f9f9f9;
           --text-primary: #1a1a2e;
-          --text-secondary: #7a7060;
-          --text-muted: #a09880;
+          --text-secondary: #555566;
+          --text-muted: #8888a0;
           --text-pill: #1a1a2e;
-          --text-pill-skipped: #8a8070;
-          --border-card: #e0d8c8;
-          --border-input: #ddd6c8;
-          --border-slot-empty: #ddd6c8;
-          --border-summary-slot: #f0ede4;
-          --accent: #c8e84a;
+          --text-pill-skipped: #888899;
+          --border-card: #e8e8f0;
+          --border-input: #dddde8;
+          --border-slot-empty: #e0e0e8;
+          --border-summary-slot: #ebebf5;
+          --accent: #BFFF00;
           --accent-text: #1a1a2e;
         }
         @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         @keyframes popIn{from{opacity:0;transform:scale(0.93)}to{opacity:1;transform:scale(1)}}
         @keyframes toastSlide{from{opacity:0;transform:translateY(16px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
         @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-        .day-tab{transition:all 0.15s;cursor:pointer;}.day-tab:hover{background:var(--bg-tab-hover)!important;}.day-tab.active{background:#1a1a2e!important;color:#f5f0e8!important;}
+        .day-tab{transition:all 0.15s;cursor:pointer;}.day-tab:hover{background:var(--bg-tab-hover)!important;}.day-tab.active{background:#2B4EFF!important;color:#ffffff!important;}
         .slot-row{transition:box-shadow 0.15s,transform 0.15s;}.slot-row:hover{box-shadow:0 4px 20px rgba(0,0,0,0.08);transform:translateY(-1px);}
         .week-nav:hover{background:var(--bg-tab-hover)!important;}
         .pill:hover{filter:brightness(0.95);}
-        input:focus{outline:none;border-color:#1a1a2e!important;}
+        input:focus{outline:none;border-color:#2B4EFF!important;}
         .pin-input{letter-spacing:6px;font-size:22px;text-align:center;}
       `}</style>
 
       {/* ── HEADER ── */}
-      <div style={{background:"var(--bg-header)",padding:"28px 24px 24px",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",right:-30,top:-30,width:140,height:140,borderRadius:"50%",border:"18px solid rgba(200,232,74,0.1)",pointerEvents:"none"}}/>
+      <div style={{background:"#2B4EFF",padding:"28px 24px 24px",position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",right:-30,top:-30,width:140,height:140,borderRadius:"50%",border:"18px solid rgba(191,255,0,0.15)",pointerEvents:"none"}}/>
         <div style={{maxWidth:680,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:6}}>
             <span style={{fontSize:28}}>🎾</span>
@@ -481,11 +481,11 @@ export default function PadelBooking() {
             </div>
           </div>
           <div style={{display:"flex",gap:10,flexWrap:"nowrap",marginTop:16}}>
-            <div onClick={()=>openModal("open-slots-summary",{days:[today],title:"Day's Open Slots"})} style={{flex:1,background:"rgba(255,255,255,0.06)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.08)",minWidth:0,cursor:"pointer"}}>
+            <div onClick={()=>openModal("open-slots-summary",{days:[today],title:"Day's Open Slots"})} style={{flex:1,background:"rgba(255,255,255,0.12)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.2)",minWidth:0,cursor:"pointer"}}>
               <div style={{fontSize:20,fontWeight:"bold",color:dayOpen>0?"#f97316":"#c8e84a"}}>{dayOpen}</div>
               <div style={{fontSize:10,color:"var(--text-muted)",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Day's open slots</div>
             </div>
-            <div onClick={()=>openModal("open-slots-summary",{days:DAYS,title:"Week's Open Spots"})} style={{flex:1,background:"rgba(255,255,255,0.06)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.08)",minWidth:0,cursor:"pointer"}}>
+            <div onClick={()=>openModal("open-slots-summary",{days:DAYS,title:"Week's Open Spots"})} style={{flex:1,background:"rgba(255,255,255,0.12)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.2)",minWidth:0,cursor:"pointer"}}>
               <div style={{fontSize:20,fontWeight:"bold",color:weekOpen>0?"#f97316":"#c8e84a"}}>{weekOpen}</div>
               <div style={{fontSize:10,color:"var(--text-muted)",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Week's open spots</div>
             </div>
@@ -506,7 +506,7 @@ export default function PadelBooking() {
 
         {/* ── WEEK NAV ── */}
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
-          <button className="week-nav" onClick={()=>setWeekOffset(w=>w-1)} style={{background:"var(--bg-tab)",border:"none",borderRadius:8,padding:"8px 14px",cursor:"pointer",fontSize:18}}>‹</button>
+          <button className="week-nav" onClick={()=>setWeekOffset(w=>w-1)} style={{background:"#ffffff",border:"none",borderRadius:8,padding:"8px 14px",boxShadow:"0 2px 8px rgba(0,0,0,0.08)",cursor:"pointer",fontSize:18}}>‹</button>
           <div style={{textAlign:"center"}}>
             <div style={{fontWeight:"bold",fontSize:15}}>
               {weekOffset===0?"This Week":weekOffset>0?`+${weekOffset} week${weekOffset>1?"s":""}`:
@@ -514,7 +514,7 @@ export default function PadelBooking() {
             </div>
             <div style={{fontSize:12,color:"var(--text-secondary)"}}>{fmtDate(weekDates["Monday"])} – {fmtDate(weekDates["Sunday"])}</div>
           </div>
-          <button className="week-nav" onClick={()=>setWeekOffset(w=>w+1)} style={{background:"var(--bg-tab)",border:"none",borderRadius:8,padding:"8px 14px",cursor:"pointer",fontSize:18}}>›</button>
+          <button className="week-nav" onClick={()=>setWeekOffset(w=>w+1)} style={{background:"#ffffff",border:"none",borderRadius:8,padding:"8px 14px",boxShadow:"0 2px 8px rgba(0,0,0,0.08)",cursor:"pointer",fontSize:18}}>›</button>
         </div>
 
         {/* ── DAY TABS ── */}
@@ -527,15 +527,16 @@ export default function PadelBooking() {
             return (
               <button key={day} className={`day-tab${active?" active":""}`} onClick={()=>setActiveDay(day)} style={{
                 flex:"0 0 auto",padding:"8px 14px",borderRadius:10,
-                border:blocked?"1.5px solid #c0392b":isTod&&!active?"1.5px solid #1a1a2e":"1.5px solid transparent",
-                background:blocked?(active?"#7b1010":"#fdecea"):active?"#1a1a2e":"#e8e0d0",
+                border:blocked?"1.5px solid #c0392b":"none",
+                boxShadow:blocked?"none":active?"0 2px 8px rgba(43,78,255,0.25)":"0 2px 8px rgba(0,0,0,0.08)",
+                background:blocked?(active?"#7b1010":"#fdecea"):active?"#2B4EFF":"#ffffff",
                 color:blocked?(active?"#fff":"#c0392b"):active?"#fff":"#1a1a2e",
                 cursor:"pointer",textAlign:"center",minWidth:68,opacity:blocked?0.6:1,
               }}>
                 <div style={{fontSize:11,letterSpacing:1,textTransform:"uppercase",opacity:0.7}}>{blocked?"🔒 ":""}{DAY_SHORT[day]}</div>
                 <div style={{fontSize:14,fontWeight:"bold",marginTop:1,textDecoration:blocked?"line-through":"none"}}>
                   {fmtDate(d)}
-                  {isTod&&!blocked&&<span style={{display:"block",width:5,height:5,borderRadius:"50%",background:"#c8e84a",margin:"2px auto 0"}}/>}
+                  {isTod&&!blocked&&<span style={{display:"block",width:5,height:5,borderRadius:"50%",background:"#BFFF00",margin:"2px auto 0"}}/>}
                 </div>
               </button>
             );
@@ -576,7 +577,7 @@ export default function PadelBooking() {
               const levelKey=`${today}-${hour}`;
 
               return (
-                <div key={hour} className="slot-row" style={{background:"var(--bg-card)",borderRadius:14,border:`1.5px solid ${full?"#f4c2c2":"#e0d8c8"}`,padding:"16px 18px",opacity:past?0.55:1}}>
+                <div key={hour} className="slot-row" style={{background:"#ffffff",borderRadius:14,border:full?"1.5px solid #f4c2c2":"none",boxShadow:full?"none":"0 2px 8px rgba(0,0,0,0.08)",padding:"16px 18px",opacity:past?0.55:1}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
                     <div>
                       <div>
@@ -594,8 +595,8 @@ export default function PadelBooking() {
                             placeholder="e.g. Medium beginner"
                             style={{fontSize:12,padding:"3px 10px",borderRadius:8,border:"1.5px solid #1a1a2e",background:"var(--bg-input)",color:"#1a1a2e",width:190}}
                           />
-                          <button onClick={()=>{saveClassLevel(today,hour,levelDraft);setEditingLevel(null);}} style={{background:"var(--bg-header)",border:"none",borderRadius:8,padding:"3px 10px",color:"#f5f0e8",fontSize:12,cursor:"pointer"}}>✓</button>
-                          <button onClick={()=>setEditingLevel(null)} style={{background:"var(--bg-tab)",border:"none",borderRadius:8,padding:"3px 8px",color:"var(--text-secondary)",fontSize:12,cursor:"pointer"}}>✕</button>
+                          <button onClick={()=>{saveClassLevel(today,hour,levelDraft);setEditingLevel(null);}} style={{background:"#2B4EFF",border:"none",borderRadius:8,padding:"3px 10px",color:"#f5f0e8",fontSize:12,cursor:"pointer"}}>✓</button>
+                          <button onClick={()=>setEditingLevel(null)} style={{background:"#e8eeff",border:"none",borderRadius:8,padding:"3px 8px",color:"var(--text-secondary)",fontSize:12,cursor:"pointer"}}>✕</button>
                         </div>
                       ):(
                         <div style={{marginTop:3,display:"flex",alignItems:"center",gap:5}}>
@@ -652,7 +653,7 @@ export default function PadelBooking() {
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,textDecoration:skipped?"line-through":"none"}}>{name}</span>
                                 </div>
                                 {!past&&skipped&&!rep&&(
-                                  <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#2e7d32",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",fontWeight:"bold",cursor:"pointer",fontFamily:"inherit",lineHeight:1,flexShrink:0}}>↺</button>
+                                  <button onClick={()=>openModal("pin-undo-skip",{day:today,hour,name})} style={{background:"#00a86b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",fontWeight:"bold",cursor:"pointer",fontFamily:"inherit",lineHeight:1,flexShrink:0}}>↺</button>
                                 )}
                                 {!past&&!skipped&&(
                                   <div style={{display:"flex",gap:4,flexShrink:0}}>
@@ -687,7 +688,7 @@ export default function PadelBooking() {
           onClick={e=>e.target===e.currentTarget&&setModal(null)}>
 
           {modal.type==="add"&&(
-            <div style={{background:"var(--bg-card)",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:360,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:360,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:4}}>🎾</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Add recurring player</h2>
               <p style={{color:"var(--text-secondary)",margin:"0 0 20px",fontSize:13}}>{modal.day} at {fmt(modal.hour)} · repeats every week<br/><span style={{color:"var(--text-muted)"}}>You'll need your PIN to skip or cancel later.</span></p>
@@ -698,13 +699,13 @@ export default function PadelBooking() {
               <p style={{fontSize:11,color:"var(--text-muted)",textAlign:"center",margin:"0 0 12px",lineHeight:1.5}}>Your name and PIN are stored solely to manage your class bookings at Celbridge Padel Academy. This information is not shared with anyone.</p>
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"var(--bg-tab)",border:"none",color:"var(--text-secondary)",fontSize:14}}>Cancel</button>
-                <button onClick={handleAdd} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"var(--bg-header)",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Book weekly slot</button>
+                <button onClick={handleAdd} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Book weekly slot</button>
               </div>
             </div>
           )}
 
           {modal.type==="pin-skip"&&(
-            <div style={{background:"var(--bg-card)",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:4}}>🗓️</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Skip this week?</h2>
               <p style={{color:"var(--text-secondary)",margin:"0 0 4px",fontSize:13}}><strong>{modal.name}</strong> · {modal.day} at {fmt(modal.hour)}</p>
@@ -714,13 +715,13 @@ export default function PadelBooking() {
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"var(--bg-tab)",border:"none",color:"var(--text-secondary)",fontSize:14}}>Cancel</button>
-                <button onClick={handlePinVerify} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"var(--bg-header)",border:"none",color:"#fff",fontSize:14,fontWeight:"bold"}}>Skip this week</button>
+                <button onClick={handlePinVerify} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#fff",fontSize:14,fontWeight:"bold"}}>Skip this week</button>
               </div>
             </div>
           )}
 
           {modal.type==="pin-remove"&&(
-            <div style={{background:"var(--bg-card)",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:360,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:360,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:8}}>🚨</div>
               <div style={{background:"#fdecea",border:"1.5px solid #f4c2c2",borderRadius:10,padding:"12px 14px",marginBottom:16}}>
                 <p style={{margin:0,color:"#c0392b",fontWeight:"bold",fontSize:15}}>⚠ This will permanently remove your booking.</p>
@@ -738,7 +739,7 @@ export default function PadelBooking() {
           )}
 
           {modal.type==="confirm-remove"&&(
-            <div style={{background:"var(--bg-card)",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:4}}>⚠️</div>
               <h2 style={{margin:"0 0 6px",fontSize:20}}>Are you sure?</h2>
               <p style={{color:"var(--text-secondary)",margin:"0 0 20px",fontSize:13}}>This will permanently remove <strong>{modal.name}</strong>'s recurring booking for {modal.day} at {fmt(modal.hour)}. Their spot will open up for someone else.</p>
@@ -750,7 +751,7 @@ export default function PadelBooking() {
           )}
 
           {modal.type==="pin-undo-skip"&&(
-            <div style={{background:"var(--bg-card)",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:4}}>↺</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Restore booking?</h2>
               <p style={{color:"var(--text-secondary)",margin:"0 0 4px",fontSize:13}}>Enter <strong>{modal.name}</strong>'s PIN to return to this week's class.</p>
@@ -759,13 +760,13 @@ export default function PadelBooking() {
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"var(--bg-tab)",border:"none",color:"var(--text-secondary)",fontSize:14}}>Cancel</button>
-                <button onClick={handleUndoSkipVerify} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"var(--bg-header)",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Restore</button>
+                <button onClick={handleUndoSkipVerify} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Restore</button>
               </div>
             </div>
           )}
 
           {modal.type==="add-rep"&&(
-            <div style={{background:"var(--bg-card)",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:360,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:360,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:4}}>🔄</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Add substitute</h2>
               <p style={{color:"var(--text-secondary)",margin:"0 0 4px",fontSize:13}}>Filling in for <strong>{modal.originalName}</strong> · {modal.day} at {fmt(modal.hour)}</p>
@@ -783,7 +784,7 @@ export default function PadelBooking() {
           )}
 
           {modal.type==="pin-remove-rep"&&(
-            <div style={{background:"var(--bg-card)",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:4}}>🔒</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Remove substitute?</h2>
               <p style={{color:"var(--text-secondary)",margin:"0 0 4px",fontSize:13}}>Enter <strong>{modal.repName}</strong>'s PIN to remove this substitution.</p>
@@ -817,7 +818,7 @@ export default function PadelBooking() {
             }
 
             return (
-              <div style={{background:"var(--bg-card)",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:400,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)",maxHeight:"80vh",display:"flex",flexDirection:"column"}}>
+              <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:400,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)",maxHeight:"80vh",display:"flex",flexDirection:"column"}}>
                 <h2 style={{margin:"0 0 4px",fontSize:20}}>{modal.title}</h2>
                 <p style={{color:"var(--text-secondary)",fontSize:13,margin:"0 0 16px"}}>{modal.days.length===1?fmtDate(weekDates[modal.days[0]]):fmtDate(weekDates["Monday"])+" – "+fmtDate(weekDates["Sunday"])}</p>
                 {detail.length===0?(
@@ -860,7 +861,7 @@ export default function PadelBooking() {
           })()}
 
           {modal.type==="admin-setup"&&(
-            <div style={{background:"var(--bg-card)",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:360,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:360,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:4}}>🔐</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Set coach PIN</h2>
               <p style={{color:"var(--text-secondary)",margin:"0 0 20px",fontSize:13}}>First time using coach actions. Set a PIN (4–6 digits) that only you know.</p>
@@ -869,13 +870,13 @@ export default function PadelBooking() {
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"var(--bg-tab)",border:"none",color:"var(--text-secondary)",fontSize:14}}>Cancel</button>
-                <button onClick={handleAdminSetup} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"var(--bg-header)",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Set PIN & continue</button>
+                <button onClick={handleAdminSetup} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Set PIN & continue</button>
               </div>
             </div>
           )}
 
           {modal.type==="admin-verify"&&(
-            <div style={{background:"var(--bg-card)",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:4}}>🔐</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Coach PIN required</h2>
               <p style={{color:"var(--text-secondary)",margin:"0 0 18px",fontSize:13}}>Enter your coach PIN to {modal.action==="block"?`block ${modal.day}`:`unblock ${modal.day}`}.</p>
@@ -883,13 +884,13 @@ export default function PadelBooking() {
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"var(--bg-tab)",border:"none",color:"var(--text-secondary)",fontSize:14}}>Cancel</button>
-                <button onClick={handleAdminVerify} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"var(--bg-header)",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Continue</button>
+                <button onClick={handleAdminVerify} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Continue</button>
               </div>
             </div>
           )}
 
           {modal.type==="block-reason"&&(
-            <div style={{background:"var(--bg-card)",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:360,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:360,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:4}}>🔒</div>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>Block {modal.day}?</h2>
               <p style={{color:"var(--text-secondary)",margin:"0 0 16px",fontSize:13}}>All classes on <strong>{modal.day}</strong> this week will be marked as cancelled. Add an optional reason.</p>
@@ -902,12 +903,12 @@ export default function PadelBooking() {
           )}
 
           {modal.type==="admin-verify-edit-level"&&(
-            <div style={{background:"var(--bg-card)",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handleAdminVerifyEditLevel()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"var(--bg-input)",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"var(--bg-tab)",border:"none",color:"var(--text-secondary)",fontSize:14}}>Cancel</button>
-                <button onClick={handleAdminVerifyEditLevel} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"var(--bg-header)",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Continue</button>
+                <button onClick={handleAdminVerifyEditLevel} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Continue</button>
               </div>
             </div>
           )}
@@ -916,7 +917,7 @@ export default function PadelBooking() {
       )}
 
       {toast&&(
-        <div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:"var(--bg-header)",color:"#f5f0e8",padding:"12px 22px",borderRadius:30,fontSize:14,boxShadow:"0 8px 32px rgba(0,0,0,0.25)",animation:"toastSlide 0.3s ease",whiteSpace:"nowrap",borderLeft:toast.type==="err"?"4px solid #e74c3c":"4px solid #c8e84a"}}>
+        <div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:"#2B4EFF",color:"#f5f0e8",padding:"12px 22px",borderRadius:30,fontSize:14,boxShadow:"0 8px 32px rgba(0,0,0,0.25)",animation:"toastSlide 0.3s ease",whiteSpace:"nowrap",borderLeft:toast.type==="err"?"4px solid #e74c3c":"4px solid #c8e84a"}}>
           {toast.msg}
         </div>
       )}
