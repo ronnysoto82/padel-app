@@ -431,8 +431,9 @@ export default function PadelBooking() {
     <div style={{minHeight:"100vh",background:"#f5f0e8",fontFamily:"'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif",color:"#1a1a2e"}}>
       <style>{`
         *{box-sizing:border-box;}::-webkit-scrollbar{display:none;}
-        @media (prefers-color-scheme: dark) { html { filter: none !important; } }
-        html, body { background-color: #f5f0e8 !important; color: #1a1a2e !important; }
+        @media (prefers-color-scheme: dark) { html { filter: none !important; background:#f5f0e8 !important; } }
+        html, body { background-color: #f5f0e8 !important; color: #1a1a2e !important; forced-color-adjust: none; -webkit-forced-color-adjust: none; }
+        * { forced-color-adjust: none; -webkit-forced-color-adjust: none; }
         @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         @keyframes popIn{from{opacity:0;transform:scale(0.93)}to{opacity:1;transform:scale(1)}}
         @keyframes toastSlide{from{opacity:0;transform:translateY(16px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
