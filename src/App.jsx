@@ -431,9 +431,7 @@ export default function PadelBooking() {
     <div style={{minHeight:"100vh",background:"var(--bg-page)",fontFamily:"'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif",color:"var(--text-primary)"}}>
       <style>{`
         *{box-sizing:border-box;}::-webkit-scrollbar{display:none;}
-        @media (prefers-color-scheme: dark) { html { filter: none !important; background:#f5f0e8 !important; } }
-        html, body { background-color: #f5f0e8 !important; color: #1a1a2e !important; forced-color-adjust: none; -webkit-forced-color-adjust: none; }
-        * { forced-color-adjust: none; -webkit-forced-color-adjust: none; }
+        html, body { background-color: #f5f0e8 !important; color: #1a1a2e !important; }
 
         :root {
           --bg-page: #f5f0e8;
@@ -459,34 +457,6 @@ export default function PadelBooking() {
           --accent: #c8e84a;
           --accent-text: #1a1a2e;
         }
-
-        @media (prefers-color-scheme: dark) {
-          :root {
-            --bg-page: #0f0f1a;
-            --bg-header: #0a0a14;
-            --bg-card: #1a1a2e;
-            --bg-pill: #2a2a40;
-            --bg-pill-skipped: #222235;
-            --bg-input: #252538;
-            --bg-slot-empty: #181828;
-            --bg-tab: #252538;
-            --bg-tab-hover: #2f2f48;
-            --bg-modal-overlay: rgba(0,0,0,0.7);
-            --bg-summary-slot: #252538;
-            --text-primary: #f0ecff;
-            --text-secondary: #a098c0;
-            --text-muted: #7870a0;
-            --text-pill: #e8e4ff;
-            --text-pill-skipped: #7870a0;
-            --border-card: #2a2a42;
-            --border-input: #3a3a58;
-            --border-slot-empty: #2a2a42;
-            --border-summary-slot: #2a2a42;
-            --accent: #c8e84a;
-            --accent-text: #1a1a2e;
-          }
-          html, body { background-color: #0f0f1a !important; color: #f0ecff !important; }
-        }
         @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         @keyframes popIn{from{opacity:0;transform:scale(0.93)}to{opacity:1;transform:scale(1)}}
         @keyframes toastSlide{from{opacity:0;transform:translateY(16px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -497,11 +467,6 @@ export default function PadelBooking() {
         .pill:hover{filter:brightness(0.95);}
         input:focus{outline:none;border-color:#1a1a2e!important;}
         .pin-input{letter-spacing:6px;font-size:22px;text-align:center;}
-        @media (prefers-color-scheme: dark) {
-          .slot-row{background:var(--bg-card);}
-          input:focus{border-color:#c8e84a!important;}
-          .day-tab.active{background:#c8e84a!important;color:#1a1a2e!important;}
-        }
       `}</style>
 
       {/* ── HEADER ── */}
