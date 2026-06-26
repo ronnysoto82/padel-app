@@ -123,6 +123,17 @@ export default function PadelBooking() {
       const t=DAYS.find(d=>isToday(getWeekDates(0)[d]));
       setActiveDay(t||"Monday");
     }
+    // Handle Stripe redirect
+    const params = new URLSearchParams(window.location.search);
+    const payment = params.get("payment");
+    if(payment==="success") {
+      const rep = params.get("rep");
+      showToast(`${rep ? rep + " booked" : "Booking confirmed"} ✅ Payment received!`);
+      window.history.replaceState({}, "", "/");
+    } else if(payment==="cancelled") {
+      showToast("Payment cancelled — slot is still open.", "err");
+      window.history.replaceState({}, "", "/");
+    }
     loadAll();
   },[]);
 
@@ -360,10 +371,26 @@ export default function PadelBooking() {
     if(pin!==confirmPin){setPinError("PINs don't match");return;}
     const {day,hour,originalName}=modal;
     const wk=weekKey(weekDates[day]);
-    const repKey=`${wk}-rep-${slotId(day,hour)}-${originalName}`;
-    await upsertCancelled(repKey,[{name,pinHash:hashPin(pin)}]);
+    const repPinHash=hashPin(pin);
+
     setModal(null);
-    showToast(`${name} added as sub this week 🎾`);
+    showToast("Redirecting to payment…");
+
+    try {
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ day, hour, originalName, repName: name, repPinHash, weekKey: wk }),
+      });
+      const data = await res.json();
+      if(data.url) {
+        window.location.href = data.url;
+      } else {
+        showToast("Payment setup failed. Try again.", "err");
+      }
+    } catch(err) {
+      showToast("Connection error. Try again.", "err");
+    }
   }
 
   function handleRemoveRepVerify() {
@@ -777,7 +804,7 @@ export default function PadelBooking() {
               <p style={{fontSize:11,color:"var(--text-muted)",textAlign:"center",margin:"0 0 12px",lineHeight:1.5}}>Your name and PIN are stored solely to manage your class bookings at Celbridge Padel Academy. This information is not shared with anyone.</p>
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#ffffff",fontSize:14}}>Cancel</button>
-                <button onClick={handleAddReplacement} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#2e7d32",border:"none",color:"#fff",fontSize:14,fontWeight:"bold"}}>Confirm sub</button>
+                <button onClick={handleAddReplacement} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#fff",fontSize:14,fontWeight:"bold"}}>Pay €25 & confirm</button>
               </div>
             </div>
           )}
