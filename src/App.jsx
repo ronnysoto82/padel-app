@@ -672,7 +672,7 @@ export default function PadelBooking() {
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
                                   <span style={{fontSize:9,color:"#fff",background:"#2e7d32",borderRadius:20,padding:"2px 6px",flexShrink:0}}>PAID</span>
                                 </div>
-                                {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,flexShrink:0}}>✕</button>}
+                                {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#1a1a2e",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,flexShrink:0}}>✕</button>}
                               </div>
                             ):(
                               /* ── Original player ── */
@@ -687,7 +687,7 @@ export default function PadelBooking() {
                                 {!past&&!skipped&&(
                                   <div style={{display:"flex",gap:4,flexShrink:0}}>
                                     <button onClick={()=>openModal("pin-skip",{day:today,hour,name,action:"skip"})} style={{background:"#2B4EFF",border:"none",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",lineHeight:1}}>Skip</button>
-                                    <button onClick={()=>openModal("pin-remove",{day:today,hour,name,action:"remove"})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1}}>✕</button>
+                                    <button onClick={()=>openModal("pin-remove",{day:today,hour,name,action:"remove"})} style={{background:"#1a1a2e",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1}}>✕</button>
                                   </div>
                                 )}
                               </div>
