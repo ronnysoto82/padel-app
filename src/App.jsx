@@ -515,9 +515,6 @@ export default function PadelBooking() {
               <div style={{fontSize:20,fontWeight:"bold",color:weekOpen>0?"#f97316":"#BFFF00"}}>{weekOpen}</div>
               <div style={{fontSize:10,color:"#a09880",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Week's open spots</div>
             </div>
-              <div style={{fontSize:20,fontWeight:"bold",color:weekOpen>0?"#f97316":"#c8e84a"}}>{weekOpen}</div>
-              <div style={{fontSize:10,color:"var(--text-muted)",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Week's open spots</div>
-            </div>
           </div>
         </div>
       </div>
