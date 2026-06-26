@@ -1,8 +1,16 @@
-import Stripe from "stripe";
+const Stripe = require("stripe");
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-export default async function handler(req, res) {
+function formatHour(h) {
+  const hrs = Math.floor(h);
+  const mins = h % 1 === 0.5 ? "30" : "00";
+  const period = hrs < 12 ? "AM" : "PM";
+  const display = hrs <= 12 ? hrs : hrs - 12;
+  return `${display}:${mins} ${period}`;
+}
+
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -26,7 +34,7 @@ export default async function handler(req, res) {
               name: `Padel Class - ${day} at ${formatHour(hour)}`,
               description: `Substitute booking for ${originalName} at Celbridge Padel Academy`,
             },
-            unit_amount: 2500, // €25.00 in cents
+            unit_amount: 2500,
           },
           quantity: 1,
         },
@@ -48,12 +56,4 @@ export default async function handler(req, res) {
     console.error("Stripe error:", err);
     res.status(500).json({ error: err.message });
   }
-}
-
-function formatHour(h) {
-  const hrs = Math.floor(h);
-  const mins = h % 1 === 0.5 ? "30" : "00";
-  const period = hrs < 12 ? "AM" : "PM";
-  const display = hrs <= 12 ? hrs : hrs - 12;
-  return `${display}:${mins} ${period}`;
-}
+};
