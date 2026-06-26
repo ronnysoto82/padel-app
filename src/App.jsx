@@ -512,6 +512,9 @@ export default function PadelBooking() {
               <div style={{fontSize:10,color:"var(--text-muted)",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Day's open slots</div>
             </div>
             <div onClick={()=>openModal("open-slots-summary",{days:DAYS,title:"Week's Open Spots"})} style={{flex:1,background:"rgba(255,255,255,0)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.25)",minWidth:0,cursor:"pointer"}}>
+              <div style={{fontSize:20,fontWeight:"bold",color:weekOpen>0?"#f97316":"#BFFF00"}}>{weekOpen}</div>
+              <div style={{fontSize:10,color:"#a09880",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Week's open spots</div>
+            </div>
               <div style={{fontSize:20,fontWeight:"bold",color:weekOpen>0?"#f97316":"#c8e84a"}}>{weekOpen}</div>
               <div style={{fontSize:10,color:"var(--text-muted)",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Week's open spots</div>
             </div>
@@ -668,6 +671,7 @@ export default function PadelBooking() {
                                   <span style={{fontSize:11,color:"#81c784",flexShrink:0}}>{i+1}</span>
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
                                   <span style={{fontSize:10,color:"#1a1a2e",background:"#a5d6a7",borderRadius:20,padding:"2px 8px",flexShrink:0}}>SUB</span>
+                                  <span style={{fontSize:10,color:"#fff",background:"#2B4EFF",borderRadius:20,padding:"2px 8px",flexShrink:0}}>PAID</span>
                                 </div>
                                 {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,flexShrink:0}}>✕</button>}
                               </div>
