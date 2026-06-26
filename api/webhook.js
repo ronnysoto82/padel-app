@@ -1,18 +1,12 @@
-import Stripe from "stripe";
+const Stripe = require("stripe");
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
 const SUPABASE_URL = "https://zaebyhuuwnsvhhnnhcsj.supabase.co";
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_STRIPE_PUBLISHABLE_KEY;
-
-// Use the anon key for now — we'll use service key later for secure writes
 const SUPABASE_ANON_KEY = "sb_publishable_JnmOtNTTux_wONg0ULPPZA_0xebodgL";
 
-export const config = {
-  api: {
-    bodyParser: false, // Required for Stripe webhook signature verification
-  },
+module.exports.config = {
+  api: { bodyParser: false },
 };
 
 async function getRawBody(req) {
@@ -39,7 +33,7 @@ async function sb(path, method = "GET", body = null) {
   return res;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -60,13 +54,18 @@ export default async function handler(req, res) {
     const { day, hour, originalName, repName, repPinHash, weekKey } = session.metadata;
 
     try {
-      // Save the substitute booking
       const repKey = `${weekKey}-rep-${day}-${hour}-${originalName}`;
-      await sb(`cancelled?cancel_key=eq.${encodeURIComponent(repKey)}`, "PATCH", {
+
+      // Try update first, then insert
+      const updateRes = await sb(`cancelled?cancel_key=eq.${encodeURIComponent(repKey)}`, "PATCH", {
         names: [{ name: repName, pinHash: repPinHash }],
       });
+      const count = updateRes.headers ? updateRes.headers.get("content-range") : null;
+      if (count === "*/0" || count === null) {
+        await sb("cancelled", "POST", { cancel_key: repKey, names: [{ name: repName, pinHash: repPinHash }] });
+      }
 
-      // Also save payment record
+      // Save payment record
       await sb("payments", "POST", {
         stripe_session_id: session.id,
         day,
@@ -80,7 +79,7 @@ export default async function handler(req, res) {
         status: "paid",
       });
 
-      console.log(`✅ Payment confirmed: ${repName} subbing for ${originalName} on ${day}`);
+      console.log(`Payment confirmed: ${repName} subbing for ${originalName} on ${day}`);
     } catch (err) {
       console.error("Supabase error:", err);
       return res.status(500).json({ error: "Failed to save booking" });
@@ -88,4 +87,4 @@ export default async function handler(req, res) {
   }
 
   res.status(200).json({ received: true });
-}
+};
