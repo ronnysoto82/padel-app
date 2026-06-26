@@ -1,11 +1,11 @@
-const Stripe = require("stripe");
+import Stripe from "stripe";
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const SUPABASE_URL = "https://zaebyhuuwnsvhhnnhcsj.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_JnmOtNTTux_wONg0ULPPZA_0xebodgL";
 
-module.exports.config = {
+export const config = {
   api: { bodyParser: false },
 };
 
@@ -33,7 +33,7 @@ async function sb(path, method = "GET", body = null) {
   return res;
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -56,7 +56,6 @@ module.exports = async function handler(req, res) {
     try {
       const repKey = `${weekKey}-rep-${day}-${hour}-${originalName}`;
 
-      // Try update first, then insert
       const updateRes = await sb(`cancelled?cancel_key=eq.${encodeURIComponent(repKey)}`, "PATCH", {
         names: [{ name: repName, pinHash: repPinHash }],
       });
@@ -65,7 +64,6 @@ module.exports = async function handler(req, res) {
         await sb("cancelled", "POST", { cancel_key: repKey, names: [{ name: repName, pinHash: repPinHash }] });
       }
 
-      // Save payment record
       await sb("payments", "POST", {
         stripe_session_id: session.id,
         day,
@@ -87,4 +85,4 @@ module.exports = async function handler(req, res) {
   }
 
   res.status(200).json({ received: true });
-};
+}
