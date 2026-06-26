@@ -471,7 +471,6 @@ export default function PadelBooking() {
 
       {/* ── HEADER ── */}
       <div style={{background:"#2B4EFF",padding:"28px 24px 24px",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",right:-30,top:-30,width:140,height:140,borderRadius:"50%",border:"18px solid rgba(191,255,0,0.15)",pointerEvents:"none"}}/>
         <div style={{maxWidth:680,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:6}}>
             <span style={{fontSize:28}}>🎾</span>
@@ -481,11 +480,11 @@ export default function PadelBooking() {
             </div>
           </div>
           <div style={{display:"flex",gap:10,flexWrap:"nowrap",marginTop:16}}>
-            <div onClick={()=>openModal("open-slots-summary",{days:[today],title:"Day's Open Slots"})} style={{flex:1,background:"rgba(255,255,255,0.12)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.2)",minWidth:0,cursor:"pointer"}}>
+            <div onClick={()=>openModal("open-slots-summary",{days:[today],title:"Day's Open Slots"})} style={{flex:1,background:"rgba(255,255,255,0)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.25)",minWidth:0,cursor:"pointer"}}>
               <div style={{fontSize:20,fontWeight:"bold",color:dayOpen>0?"#f97316":"#c8e84a"}}>{dayOpen}</div>
               <div style={{fontSize:10,color:"var(--text-muted)",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Day's open slots</div>
             </div>
-            <div onClick={()=>openModal("open-slots-summary",{days:DAYS,title:"Week's Open Spots"})} style={{flex:1,background:"rgba(255,255,255,0.12)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.2)",minWidth:0,cursor:"pointer"}}>
+            <div onClick={()=>openModal("open-slots-summary",{days:DAYS,title:"Week's Open Spots"})} style={{flex:1,background:"rgba(255,255,255,0)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.25)",minWidth:0,cursor:"pointer"}}>
               <div style={{fontSize:20,fontWeight:"bold",color:weekOpen>0?"#f97316":"#c8e84a"}}>{weekOpen}</div>
               <div style={{fontSize:10,color:"var(--text-muted)",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Week's open spots</div>
             </div>
@@ -546,11 +545,11 @@ export default function PadelBooking() {
         {/* ── BLOCK / UNBLOCK ── */}
         <div style={{display:"flex",justifyContent:"flex-end",marginBottom:12}}>
           {isDayBlocked(today)?(
-            <button onClick={()=>handleAdminAction("unblock",{day:today})} style={{background:"none",border:"1.5px solid #c0392b",borderRadius:8,padding:"5px 14px",fontSize:12,color:"#c0392b",cursor:"pointer",fontFamily:"inherit"}}>
+            <button onClick={()=>handleAdminAction("unblock",{day:today})} style={{background:"#ffffff",border:"none",boxShadow:"0 2px 8px rgba(0,0,0,0.08)",borderRadius:8,padding:"5px 14px",fontSize:12,color:"#c0392b",cursor:"pointer",fontFamily:"inherit"}}>
               🔓 Unblock {today}
             </button>
           ):(
-            <button onClick={()=>handleAdminAction("block",{day:today})} style={{background:"none",border:"1.5px solid #a09880",borderRadius:8,padding:"5px 14px",fontSize:12,color:"var(--text-secondary)",cursor:"pointer",fontFamily:"inherit"}}>
+            <button onClick={()=>handleAdminAction("block",{day:today})} style={{background:"#ffffff",border:"none",boxShadow:"0 2px 8px rgba(0,0,0,0.08)",borderRadius:8,padding:"5px 14px",fontSize:12,color:"#2B4EFF",cursor:"pointer",fontFamily:"inherit"}}>
               🔒 Block {today}
             </button>
           )}
@@ -577,7 +576,7 @@ export default function PadelBooking() {
               const levelKey=`${today}-${hour}`;
 
               return (
-                <div key={hour} className="slot-row" style={{background:"#ffffff",borderRadius:14,border:full?"1.5px solid #f4c2c2":"none",boxShadow:full?"none":"0 2px 8px rgba(0,0,0,0.08)",padding:"16px 18px",opacity:past?0.55:1}}>
+                <div key={hour} className="slot-row" style={{background:"#ffffff",borderRadius:14,border:"none",boxShadow:full?"0 2px 8px rgba(192,57,43,0.2)":"0 2px 8px rgba(0,0,0,0.08)",padding:"16px 18px",opacity:past?0.55:1}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
                     <div>
                       <div>
@@ -657,7 +656,7 @@ export default function PadelBooking() {
                                 )}
                                 {!past&&!skipped&&(
                                   <div style={{display:"flex",gap:4,flexShrink:0}}>
-                                    <button onClick={()=>openModal("pin-skip",{day:today,hour,name,action:"skip"})} style={{background:"#f97316",border:"none",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",lineHeight:1}}>Skip</button>
+                                    <button onClick={()=>openModal("pin-skip",{day:today,hour,name,action:"skip"})} style={{background:"#2B4EFF",border:"none",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",lineHeight:1}}>Skip</button>
                                     <button onClick={()=>openModal("pin-remove",{day:today,hour,name,action:"remove"})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1}}>✕</button>
                                   </div>
                                 )}
