@@ -667,11 +667,11 @@ export default function PadelBooking() {
                             {rep?(
                               /* ── Sub in same position, swapped colour ── */
                               <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:6,flex:1,minWidth:0,background:"#e8f5e9",borderRadius:20,padding:"9px 14px",fontSize:14,color:"#2e7d32",border:"1px solid #c8e6c9"}}>
-                                <div style={{display:"flex",alignItems:"center",gap:6,minWidth:0,flex:1}}>
+                                <div style={{display:"flex",alignItems:"center",gap:4,minWidth:0,flex:1}}>
                                   <span style={{fontSize:11,color:"#81c784",flexShrink:0}}>{i+1}</span>
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,flex:1}}>{rep.name}</span>
-                                  <span style={{fontSize:10,color:"#1a1a2e",background:"#a5d6a7",borderRadius:20,padding:"2px 8px",flexShrink:0}}>SUB</span>
-                                  <span style={{fontSize:10,color:"#fff",background:"#2B4EFF",borderRadius:20,padding:"2px 8px",flexShrink:0}}>{"€"}</span>
+                                  <span style={{fontSize:9,color:"#1a1a2e",background:"#a5d6a7",borderRadius:20,padding:"2px 6px",flexShrink:0}}>SUB</span>
+                                  <span style={{fontSize:9,color:"#fff",background:"#2B4EFF",borderRadius:20,padding:"2px 6px",flexShrink:0}}>{"€"}</span>
                                 </div>
                                 {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#c0392b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,flexShrink:0}}>✕</button>}
                               </div>
