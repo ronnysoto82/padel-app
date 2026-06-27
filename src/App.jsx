@@ -635,7 +635,11 @@ export default function PadelBooking() {
                       )}
                     </div>
                     <div style={{display:"flex",alignItems:"center",gap:8}}>
-                      {full&&<span style={{fontSize:11,padding:"2px 9px",borderRadius:20,background:"#fdecea",color:"#c0392b",letterSpacing:0.5}}>FULL</span>}
+                      {full?(
+                        <span style={{fontSize:11,padding:"2px 9px",borderRadius:20,background:"#fdecea",color:"#c0392b",letterSpacing:0.5}}>FULL</span>
+                      ):(
+                        <span style={{fontSize:11,padding:"2px 9px",borderRadius:20,background:"#e8f5e9",color:"#2e7d32",letterSpacing:0.5}}>{effectiveCount}/{MAX_SLOTS}</span>
+                      )}
                     </div>
                   </div>
 
