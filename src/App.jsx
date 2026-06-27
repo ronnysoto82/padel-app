@@ -663,13 +663,13 @@ export default function PadelBooking() {
                           <div style={{display:"flex",alignItems:"center",gap:8}}>
                             {rep?(
                               /* ── Sub in same position, swapped colour ── */
-                              <div className="pill" style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:6,flex:1,minWidth:0,background:"#e8f5e9",borderRadius:20,padding:"9px 14px",fontSize:14,color:"#2e7d32",border:"1px solid #c8e6c9"}}>
+                              <div className="pill" onClick={()=>!past&&openModal("sub-actions",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:6,flex:1,minWidth:0,background:"#e8f5e9",borderRadius:20,padding:"9px 14px",fontSize:14,color:"#2e7d32",border:"1px solid #c8e6c9",cursor:past?"default":"pointer"}}>
                                 <div style={{display:"flex",alignItems:"center",gap:6,minWidth:0,flex:1}}>
                                   <span style={{fontSize:11,color:"#81c784",flexShrink:0}}>{i+1}</span>
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{rep.name}</span>
                                   <span style={{fontSize:9,color:"#fff",background:"#2e7d32",borderRadius:20,padding:"2px 6px",flexShrink:0}}>PAID</span>
                                 </div>
-                                {!past&&<button onClick={()=>openModal("pin-remove-rep",{day:today,hour,originalName:name,repName:rep.name,repPinHash:rep.pinHash})} style={{background:"#1a1a2e",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",cursor:"pointer",fontFamily:"inherit",fontWeight:"bold",lineHeight:1,flexShrink:0}}>✕</button>}
+                                {!past&&<span style={{fontSize:16,color:"#81c784",flexShrink:0}}>☰</span>}
                               </div>
                             ):(
                               /* ── Original player ── */
@@ -714,6 +714,21 @@ export default function PadelBooking() {
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#ffffff",fontSize:14}}>Cancel</button>
                 <button onClick={handleAdd} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Book weekly slot</button>
+              </div>
+            </div>
+          )}
+
+          {modal.type==="sub-actions"&&(
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+              <h2 style={{margin:"0 0 4px",fontSize:20}}>{modal.repName}</h2>
+              <p style={{color:"var(--text-secondary)",fontSize:13,margin:"0 0 20px"}}>{modal.day} at {fmt(modal.hour)} · subbing for {modal.originalName}</p>
+              <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                <button onClick={()=>openModal("pin-remove-rep",{day:modal.day,hour:modal.hour,originalName:modal.originalName,repName:modal.repName,repPinHash:modal.repPinHash})} style={{width:"100%",padding:14,borderRadius:12,cursor:"pointer",background:"#fdecea",border:"none",color:"#c0392b",fontSize:15,fontWeight:"bold",textAlign:"left"}}>
+                  ✕ Cancel this class
+                </button>
+                <button onClick={()=>setModal(null)} style={{width:"100%",padding:12,borderRadius:12,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#fff",fontSize:14}}>
+                  Cancel
+                </button>
               </div>
             </div>
           )}
