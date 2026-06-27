@@ -682,7 +682,7 @@ export default function PadelBooking() {
                                   <button onClick={e=>{e.stopPropagation();openModal("pin-undo-skip",{day:today,hour,name});}} style={{background:"#00a86b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",fontWeight:"bold",cursor:"pointer",fontFamily:"inherit",lineHeight:1,flexShrink:0}}>↺</button>
                                 )}
                                 {!past&&!skipped&&(
-                                  <span style={{fontSize:14,color:"#a09880",letterSpacing:2,flexShrink:0}}>|||</span>
+                                  <span style={{fontSize:16,color:"#a09880",flexShrink:0}}>☰</span>
                                 )}
                               </div>
                             )}
@@ -733,10 +733,10 @@ export default function PadelBooking() {
               <p style={{color:"var(--text-secondary)",fontSize:13,margin:"0 0 20px"}}>{modal.day} at {fmt(modal.hour)}</p>
               <div style={{display:"flex",flexDirection:"column",gap:10}}>
                 <button onClick={()=>openModal("pin-skip",{day:modal.day,hour:modal.hour,name:modal.name,action:"skip"})} style={{width:"100%",padding:14,borderRadius:12,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#fff",fontSize:15,fontWeight:"bold",textAlign:"left"}}>
-                  ⏸ Skip this week
+                  🚫 Skip this class
                 </button>
                 <button onClick={()=>openModal("pin-remove",{day:modal.day,hour:modal.hour,name:modal.name,action:"remove"})} style={{width:"100%",padding:14,borderRadius:12,cursor:"pointer",background:"#fdecea",border:"none",color:"#c0392b",fontSize:15,fontWeight:"bold",textAlign:"left"}}>
-                  ✕ Remove booking
+                  ✕ Cancel academy
                 </button>
                 <button onClick={()=>setModal(null)} style={{width:"100%",padding:12,borderRadius:12,cursor:"pointer",background:"#f0f2f5",border:"none",color:"var(--text-secondary)",fontSize:14}}>
                   Cancel
