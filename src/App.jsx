@@ -738,7 +738,7 @@ export default function PadelBooking() {
                 <button onClick={()=>openModal("pin-remove",{day:modal.day,hour:modal.hour,name:modal.name,action:"remove"})} style={{width:"100%",padding:14,borderRadius:12,cursor:"pointer",background:"#fdecea",border:"none",color:"#c0392b",fontSize:15,fontWeight:"bold",textAlign:"left"}}>
                   ✕ Cancel academy
                 </button>
-                <button onClick={()=>setModal(null)} style={{width:"100%",padding:12,borderRadius:12,cursor:"pointer",background:"#f0f2f5",border:"none",color:"var(--text-secondary)",fontSize:14}}>
+                <button onClick={()=>setModal(null)} style={{width:"100%",padding:12,borderRadius:12,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#fff",fontSize:14}}>
                   Cancel
                 </button>
               </div>
