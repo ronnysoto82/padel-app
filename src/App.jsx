@@ -684,12 +684,6 @@ export default function PadelBooking() {
                               </div>
                             )}
                           </div>
-                          {/* ── + sub button when skipped with no rep ── */}
-                          {skipped&&!rep&&!past&&(
-                            <div style={{paddingLeft:14}}>
-                              <button onClick={()=>openModal("add-rep",{day:today,hour,originalName:name})} style={{background:"none",border:"1.5px dashed #a5d6a7",borderRadius:20,padding:"5px 14px",fontSize:12,color:"#66bb6a",cursor:"pointer",fontStyle:"italic"}}>+ add sub</button>
-                            </div>
-                          )}
                         </div>
                       );
                     })}
