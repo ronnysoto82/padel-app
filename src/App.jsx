@@ -650,7 +650,7 @@ export default function PadelBooking() {
                             onMouseLeave={e=>{e.currentTarget.style.background="#faf8f4";e.currentTarget.style.borderColor="#ddd6c8";}}
                             style={{display:"flex",alignItems:"center",gap:8,padding:"9px 14px",borderRadius:20,border:"1.5px dashed #ddd6c8",background:"var(--bg-slot-empty)",cursor:past||full?"default":"pointer",transition:"background 0.15s,border-color 0.15s"}}>
                             <span style={{fontSize:11,color:"#c0b8a8",flexShrink:0}}>{i+1}</span>
-                            <span style={{fontSize:14,color:"#c0b8a8",fontStyle:"italic"}}>{past?"—":"open"}</span>
+                            <span style={{fontSize:14,color:"#c0b8a8",fontStyle:"italic"}}>{past?"—":"Open"}</span>
                           </div>
                         );
                       }
@@ -673,10 +673,10 @@ export default function PadelBooking() {
                               </div>
                             ):(
                               /* ── Original player ── */
-                              <div className="pill" onClick={()=>!past&&openModal(skipped?"skipped-actions":"player-actions",{day:today,hour,name})} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:skipped?"var(--bg-pill-skipped)":"var(--bg-pill)",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"var(--text-pill-skipped)":"var(--text-pill)",border:"none",cursor:past?"default":"pointer"}}>
-                                <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0,opacity:skipped?0.55:1}}>
-                                  <span style={{fontSize:11,color:skipped?"#a09880":"#a09880",flexShrink:0}}>{i+1}</span>
-                                  <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,textDecoration:skipped?"line-through":"none"}}>{name}</span>
+                              <div className="pill" onClick={()=>!past&&openModal(skipped?"skipped-actions":"player-actions",{day:today,hour,name})} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:skipped?"#f0faf6":"var(--bg-pill)",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"#00a86b":"var(--text-pill)",border:skipped?"1.5px dashed #a5d6a7":"none",cursor:past?"default":"pointer"}}>
+                                <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
+                                  <span style={{fontSize:11,color:skipped?"#a5d6a7":"#a09880",flexShrink:0}}>{i+1}</span>
+                                  <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{skipped?"Open":name}</span>
                                 </div>
                                 {!past&&(
                                   <span style={{fontSize:16,color:"#a09880",flexShrink:0}}>☰</span>
