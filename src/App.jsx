@@ -673,15 +673,12 @@ export default function PadelBooking() {
                               </div>
                             ):(
                               /* ── Original player ── */
-                              <div className="pill" onClick={()=>!past&&!skipped&&openModal("player-actions",{day:today,hour,name})} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:skipped?"var(--bg-pill-skipped)":"var(--bg-pill)",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"var(--text-pill-skipped)":"var(--text-pill)",border:"none",cursor:past||skipped?"default":"pointer"}}>
+                              <div className="pill" onClick={()=>!past&&openModal(skipped?"skipped-actions":"player-actions",{day:today,hour,name})} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:skipped?"var(--bg-pill-skipped)":"var(--bg-pill)",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"var(--text-pill-skipped)":"var(--text-pill)",border:"none",cursor:past?"default":"pointer"}}>
                                 <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0,opacity:skipped?0.55:1}}>
                                   <span style={{fontSize:11,color:skipped?"#a09880":"#a09880",flexShrink:0}}>{i+1}</span>
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,textDecoration:skipped?"line-through":"none"}}>{name}</span>
                                 </div>
-                                {!past&&skipped&&!rep&&(
-                                  <button onClick={e=>{e.stopPropagation();openModal("pin-undo-skip",{day:today,hour,name});}} style={{background:"#00a86b",border:"none",borderRadius:20,padding:"4px 10px",fontSize:13,color:"#fff",fontWeight:"bold",cursor:"pointer",fontFamily:"inherit",lineHeight:1,flexShrink:0}}>↺</button>
-                                )}
-                                {!past&&!skipped&&(
+                                {!past&&(
                                   <span style={{fontSize:16,color:"#a09880",flexShrink:0}}>☰</span>
                                 )}
                               </div>
@@ -723,6 +720,26 @@ export default function PadelBooking() {
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#ffffff",fontSize:14}}>Cancel</button>
                 <button onClick={handleAdd} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#f5f0e8",fontSize:14,fontWeight:"bold"}}>Book weekly slot</button>
+              </div>
+            </div>
+          )}
+
+          {modal.type==="skipped-actions"&&(
+            <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+              <h2 style={{margin:"0 0 4px",fontSize:20}}>{modal.name}</h2>
+              <p style={{color:"var(--text-secondary)",fontSize:13,margin:"0 0 20px"}}>{modal.day} at {fmt(modal.hour)} · skipping this week</p>
+              <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                {!getReplacement(modal.day,modal.hour,modal.name)&&(
+                  <button onClick={()=>openModal("add-rep",{day:modal.day,hour:modal.hour,originalName:modal.name})} style={{width:"100%",padding:14,borderRadius:12,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#fff",fontSize:15,fontWeight:"bold",textAlign:"left"}}>
+                    🎾 Book this class
+                  </button>
+                )}
+                <button onClick={()=>openModal("pin-undo-skip",{day:modal.day,hour:modal.hour,name:modal.name})} style={{width:"100%",padding:14,borderRadius:12,cursor:"pointer",background:"#00a86b",border:"none",color:"#fff",fontSize:15,fontWeight:"bold",textAlign:"left"}}>
+                  ↺ Restore class
+                </button>
+                <button onClick={()=>setModal(null)} style={{width:"100%",padding:12,borderRadius:12,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#fff",fontSize:14}}>
+                  Cancel
+                </button>
               </div>
             </div>
           )}
