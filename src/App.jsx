@@ -507,13 +507,13 @@ export default function PadelBooking() {
             </div>
           </div>
           <div style={{display:"flex",gap:10,flexWrap:"nowrap",marginTop:16}}>
-            <div onClick={()=>openModal("open-slots-summary",{days:[today],title:"Day's Open Slots"})} style={{flex:1,background:"rgba(255,255,255,0)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.25)",minWidth:0,cursor:"pointer"}}>
+            <div onClick={()=>openModal("open-slots-summary",{days:[today],title:"Day's Open Slots"})} style={{flex:1,background:"rgba(255,255,255,0.15)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.4)",minWidth:0,cursor:"pointer"}}>
               <div style={{fontSize:20,fontWeight:"bold",color:dayOpen>0?"#f97316":"#c8e84a"}}>{dayOpen}</div>
-              <div style={{fontSize:10,color:"var(--text-muted)",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Day's open slots</div>
+              <div style={{fontSize:10,color:"rgba(255,255,255,0.8)",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Day's open slots</div>
             </div>
-            <div onClick={()=>openModal("open-slots-summary",{days:DAYS,title:"Week's Open Spots"})} style={{flex:1,background:"rgba(255,255,255,0)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.25)",minWidth:0,cursor:"pointer"}}>
+            <div onClick={()=>openModal("open-slots-summary",{days:DAYS,title:"Week's Open Spots"})} style={{flex:1,background:"rgba(255,255,255,0.15)",borderRadius:10,padding:"8px 10px",border:"1px solid rgba(255,255,255,0.4)",minWidth:0,cursor:"pointer"}}>
               <div style={{fontSize:20,fontWeight:"bold",color:weekOpen>0?"#f97316":"#BFFF00"}}>{weekOpen}</div>
-              <div style={{fontSize:10,color:"#a09880",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Week's open spots</div>
+              <div style={{fontSize:10,color:"rgba(255,255,255,0.8)",letterSpacing:0.5,textTransform:"uppercase",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Week's open spots</div>
             </div>
           </div>
         </div>
@@ -655,6 +655,7 @@ export default function PadelBooking() {
                             style={{display:"flex",alignItems:"center",gap:8,padding:"9px 14px",borderRadius:20,border:"1.5px dashed #ddd6c8",background:"var(--bg-slot-empty)",cursor:past||full?"default":"pointer",transition:"background 0.15s,border-color 0.15s"}}>
                             <span style={{fontSize:11,color:"#c0b8a8",flexShrink:0}}>{i+1}</span>
                             <span style={{fontSize:14,color:"#c0b8a8",fontStyle:"italic"}}>{past?"—":"Open"}</span>
+                            {!past&&!full&&<span style={{fontSize:18,color:"#00a86b",flexShrink:0,marginLeft:"auto"}}>●</span>}
                           </div>
                         );
                       }
@@ -683,7 +684,10 @@ export default function PadelBooking() {
                                   <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{skipped?"Open":name}</span>
                                 </div>
                                 {!past&&(
-                                  <span style={{fontSize:16,color:"#a09880",flexShrink:0}}>☰</span>
+                                  <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
+                                    {skipped&&<span style={{fontSize:18,color:"#00a86b"}}>●</span>}
+                                    <span style={{fontSize:16,color:skipped?"#00a86b":"#a09880"}}>☰</span>
+                                  </div>
                                 )}
                               </div>
                             )}
@@ -766,7 +770,7 @@ export default function PadelBooking() {
                   🚫 Cancel this class
                 </button>
                 <button onClick={()=>openModal("pin-remove",{day:modal.day,hour:modal.hour,name:modal.name,action:"remove"})} style={{width:"100%",padding:14,borderRadius:12,cursor:"pointer",background:"#fdecea",border:"none",color:"#c0392b",fontSize:15,fontWeight:"bold",textAlign:"left"}}>
-                  ⛔ Exit the academy
+                  ⛔ Leave the academy
                 </button>
                 <button onClick={()=>setModal(null)} style={{width:"100%",padding:12,borderRadius:12,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#fff",fontSize:14}}>
                   Cancel
