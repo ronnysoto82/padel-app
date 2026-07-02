@@ -331,7 +331,7 @@ export default function PadelBooking() {
     const current=getCancelledNames(key);
     await upsertCancelled(key,[...current,name]);
     setModal(null);
-    showToast(`${name} skipped this week`);
+    showToast(`${name} cancelled this class`);
   }
 
   function handleUndoSkipVerify() {
@@ -782,15 +782,15 @@ export default function PadelBooking() {
           {modal.type==="pin-skip"&&(
             <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <div style={{fontSize:22,marginBottom:4}}>🗓️</div>
-              <h2 style={{margin:"0 0 4px",fontSize:20}}>Skip this week?</h2>
-              <p style={{color:"var(--text-secondary)",margin:"0 0 4px",fontSize:13}}><strong>{modal.name}</strong> · {modal.day} at {fmt(modal.hour)}</p>
-              <p style={{color:"var(--text-muted)",margin:"0 0 4px",fontSize:13}}>Enter your PIN to skip this week only. You'll be back automatically next week.</p>
-              {adminPinHash&&<p style={{color:"#b8a898",margin:"0 0 16px",fontSize:12}}>Forgotten your PIN? Ask the coach to skip the class for you.</p>}
+              <h2 style={{margin:"0 0 4px",fontSize:20}}>Cancel this class?</h2>
+              <p style={{color:"var(--text-secondary)",margin:"0 0 4px",fontSize:13}}><strong>{modal.name}</strong> · {modal.day} {fmtDate(weekDates[modal.day])} at {fmt(modal.hour)}</p>
+              <p style={{color:"var(--text-muted)",margin:"0 0 4px",fontSize:13}}>Enter your PIN to cancel this class. You'll be back automatically next week.</p>
+              {adminPinHash&&<p style={{color:"#b8a898",margin:"0 0 16px",fontSize:12}}>Ask the coach to cancel this class for you if you forgot your PIN.</p>}
               <input className="pin-input" type="password" inputMode="numeric" maxLength={6} autoFocus placeholder="••••" value={form.pin} onKeyDown={e=>e.key==="Enter"&&handlePinVerify()} onChange={e=>{setForm(f=>({...f,pin:e.target.value.replace(/\D/,"")}));setPinError("");}} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:`1.5px solid ${pinError?"#e74c3c":"#ddd6c8"}`,background:"var(--bg-input)",color:"#1a1a2e",marginBottom:pinError?6:16}}/>
               {pinError&&<p style={{color:"#c0392b",fontSize:13,margin:"0 0 12px"}}>⚠ {pinError}</p>}
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setModal(null)} style={{flex:1,padding:11,borderRadius:10,cursor:"pointer",background:"#1a1a2e",border:"none",color:"#ffffff",fontSize:14}}>Cancel</button>
-                <button onClick={handlePinVerify} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#fff",fontSize:14,fontWeight:"bold"}}>Skip this week</button>
+                <button onClick={handlePinVerify} style={{flex:2,padding:11,borderRadius:10,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#fff",fontSize:14,fontWeight:"bold"}}>Cancel this class</button>
               </div>
             </div>
           )}
