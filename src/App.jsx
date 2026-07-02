@@ -654,7 +654,7 @@ export default function PadelBooking() {
                             onMouseLeave={e=>{e.currentTarget.style.background="#faf8f4";e.currentTarget.style.borderColor="#ddd6c8";}}
                             style={{display:"flex",alignItems:"center",gap:8,padding:"9px 14px",borderRadius:20,border:"1.5px dashed #ddd6c8",background:"var(--bg-slot-empty)",cursor:past||full?"default":"pointer",transition:"background 0.15s,border-color 0.15s"}}>
                             <span style={{fontSize:11,color:"#c0b8a8",flexShrink:0}}>{i+1}</span>
-                            <span style={{fontSize:14,color:"#c0b8a8",fontStyle:"italic"}}>{past?"—":"Open"}</span>
+                            <span style={{fontSize:14,color:"#c0b8a8",fontStyle:"italic",fontWeight:"bold"}}>{past?"—":"Open"}</span>
                             {!past&&!full&&<span style={{fontSize:18,color:"#00a86b",flexShrink:0,marginLeft:"auto"}}>●</span>}
                           </div>
                         );
@@ -678,10 +678,10 @@ export default function PadelBooking() {
                               </div>
                             ):(
                               /* ── Original player ── */
-                              <div className="pill" onClick={()=>!past&&openModal(skipped?"skipped-actions":"player-actions",{day:today,hour,name})} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:skipped?"#f0faf6":"var(--bg-pill)",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"#00a86b":"var(--text-pill)",border:skipped?"1.5px dashed #a5d6a7":"none",cursor:past?"default":"pointer"}}>
+                              <div className="pill" onClick={()=>!past&&openModal(skipped?"skipped-actions":"",{day:today,hour,name})} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flex:1,minWidth:0,background:skipped?"#f0faf6":"var(--bg-pill)",borderRadius:20,padding:"9px 14px",fontSize:14,color:skipped?"#00a86b":"var(--text-pill)",border:skipped?"1.5px dashed #a5d6a7":"none",cursor:past?"default":"pointer"}}>
                                 <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
                                   <span style={{fontSize:11,color:skipped?"#a5d6a7":"#a09880",flexShrink:0}}>{i+1}</span>
-                                  <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{skipped?"Open":name}</span>
+                                  <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,fontWeight:skipped?"bold":"normal"}}>{skipped?"Open":name}</span>
                                 </div>
                                 {!past&&(
                                   <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
@@ -744,7 +744,7 @@ export default function PadelBooking() {
           {modal.type==="skipped-actions"&&(
             <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>{modal.name}</h2>
-              <p style={{color:"var(--text-secondary)",fontSize:13,margin:"0 0 20px"}}>{modal.day} at {fmt(modal.hour)} · skipping this week</p>
+              <p style={{color:"var(--text-secondary)",fontSize:13,margin:"0 0 20px"}}>{modal.day} {fmtDate(weekDates[modal.day])} at {fmt(modal.hour)} · skipping this week</p>
               <div style={{display:"flex",flexDirection:"column",gap:10}}>
                 {!getReplacement(modal.day,modal.hour,modal.name)&&(
                   <button onClick={()=>openModal("add-rep",{day:modal.day,hour:modal.hour,originalName:modal.name})} style={{width:"100%",padding:14,borderRadius:12,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#fff",fontSize:15,fontWeight:"bold",textAlign:"left"}}>
@@ -764,7 +764,7 @@ export default function PadelBooking() {
           {modal.type==="player-actions"&&(
             <div style={{background:"#ffffff",borderRadius:20,padding:"28px 24px",width:"100%",maxWidth:340,animation:"popIn 0.2s ease",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
               <h2 style={{margin:"0 0 4px",fontSize:20}}>{modal.name}</h2>
-              <p style={{color:"var(--text-secondary)",fontSize:13,margin:"0 0 20px"}}>{modal.day} at {fmt(modal.hour)}</p>
+              <p style={{color:"var(--text-secondary)",fontSize:13,margin:"0 0 20px"}}>{modal.day} {fmtDate(weekDates[modal.day])} at {fmt(modal.hour)}</p>
               <div style={{display:"flex",flexDirection:"column",gap:10}}>
                 <button onClick={()=>openModal("pin-skip",{day:modal.day,hour:modal.hour,name:modal.name,action:"skip"})} style={{width:"100%",padding:14,borderRadius:12,cursor:"pointer",background:"#2B4EFF",border:"none",color:"#fff",fontSize:15,fontWeight:"bold",textAlign:"left"}}>
                   🚫 Cancel this class
